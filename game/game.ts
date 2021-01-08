@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { Light } from 'three'
 
 
 export default class Game {
@@ -13,28 +14,64 @@ export default class Game {
 
   initialize(height: number, width: number) {
     this.scene = new THREE.Scene()
-    this.camera = new THREE.PerspectiveCamera(90, 1280/720, 0.1, 1000)
-    this.setupCamera()
+    this.camera = new THREE.PerspectiveCamera(90, width/height, 0.1, 1000)
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
-    const geometry = new THREE.BoxGeometry(1, 1, 1)
-    const material = new THREE.MeshBasicMaterial({ color: 0xff00ff })
-    this.cube = new THREE.Mesh(geometry, material)
-
-    this.camera.position.z = 20
-    this.scene.add(this.cube)
+    
+    
     this.renderer.setClearColor('#000000')
     this.renderer.setSize(width, height)
-
-    var geo = new THREE.PlaneGeometry(10,10)
-    var mat = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
-    var plane = new THREE.Mesh(geo, mat);
-
-    this.scene.add(plane);
+    this.setupCubeMesh()
+    this.setupGround()
+    this.setupCamera()
+    this.setupShadows()
+    this.setupLights()
+  }
+  
+  private setupCubeMesh() {
+    const geometry = new THREE.BoxGeometry(1, 1, 1)
+    const material = new THREE.MeshPhongMaterial({ color: 0xff00ff , wireframe: false })
+    this.cube = new THREE.Mesh(geometry, material)
+    this.cube.receiveShadow = true 
+    this.cube.castShadow = true
+    this.cube.position.y += 2
+    this.camera.position.z = 20
+    this.scene.add(this.cube)
   }
 
   private setupCamera() {
-    // this.camera.position.set(0, this.player.height, -5);
-    // this.camera.lookAt(new THREE.Vector3(0,this.player.height,0));
+    this.camera.position.set(0, this.player.height, -5);
+    this.camera.lookAt(new THREE.Vector3(0,this.player.height,0));
+  }
+
+  private setupGround() {
+    const geo = new THREE.PlaneGeometry(10,10, 10, 10)
+    const mat = new THREE.MeshPhongMaterial({ color: 0xffffff, wireframe: false });
+    const plane = new THREE.Mesh(geo, mat);
+    plane.rotation.x -= Math.PI / 2
+    plane.receiveShadow = true
+    this.scene.add(plane);
+  }
+
+  private setupShadows() {
+    //1. Enable shadows in renderer
+    this.renderer.shadowMap.enabled = true 
+    this.renderer.shadowMap.type = THREE.BasicShadowMap
+  }
+
+  private setupLights() {
+    /// Ambient light that fills the whole room 
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
+
+    /// Point light for the camera 
+    const pointLight = new THREE.PointLight(0xffffff, 0.5, 18)
+    pointLight.position.set(-3, 6, -3)
+    pointLight.castShadow = true 
+    pointLight.shadow.camera.near = 0.1 
+    pointLight.shadow.camera.far = 25 
+
+
+    this.scene.add(ambientLight)
+    this.scene.add(pointLight)
   }
 
   renderScene() {
@@ -85,16 +122,18 @@ export default class Game {
     }
 
     if(this.pressedKeys[38]){ // Up arrow key
-      this.camera.rotation.z += this.player.turnSpeed;
+      this.camera.rotation.x -= this.player.turnSpeed;
     }
     if(this.pressedKeys[39]){ // right arrow key
       this.camera.rotation.y += this.player.turnSpeed;
     }
 
     if(this.pressedKeys[40]){ // down arrow key
-      this.camera.rotation.z -= this.player.turnSpeed;
+      this.camera.rotation.x += this.player.turnSpeed;
     }
   }
+
+  
 
 
   keyDidInteract(keyCode: number, didPress: boolean) {
@@ -102,3 +141,4 @@ export default class Game {
   }
 
 }
+
