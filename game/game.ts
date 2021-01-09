@@ -14,6 +14,7 @@ export default class Game {
 
   initialize(height: number, width: number) {
     this.scene = new THREE.Scene()
+    this.scene.background = new THREE.Color(0x87ceeb)
     this.camera = new THREE.PerspectiveCamera(90, width/height, 0.1, 1000)
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
     
@@ -28,24 +29,24 @@ export default class Game {
   }
   
   private setupCubeMesh() {
-    const geometry = new THREE.BoxGeometry(1, 1, 1)
+    const geometry = new THREE.SphereGeometry(1)
     const material = new THREE.MeshPhongMaterial({ color: 0xff00ff , wireframe: false })
     this.cube = new THREE.Mesh(geometry, material)
     this.cube.receiveShadow = true 
     this.cube.castShadow = true
-    this.cube.position.y += 2
+    this.cube.position.y += 1
     this.camera.position.z = 20
     this.scene.add(this.cube)
   }
 
   private setupCamera() {
-    this.camera.position.set(0, this.player.height, -5);
+    this.camera.position.set(-1, 20, -10);
     this.camera.lookAt(new THREE.Vector3(0,this.player.height,0));
   }
 
   private setupGround() {
-    const geo = new THREE.PlaneGeometry(10,10, 10, 10)
-    const mat = new THREE.MeshPhongMaterial({ color: 0xffffff, wireframe: false });
+    const geo = new THREE.PlaneGeometry(100,100, 10, 10)
+    const mat = new THREE.MeshPhongMaterial({ color: 0x58d10d, wireframe: false });
     const plane = new THREE.Mesh(geo, mat);
     plane.rotation.x -= Math.PI / 2
     plane.receiveShadow = true
@@ -60,7 +61,7 @@ export default class Game {
 
   private setupLights() {
     /// Ambient light that fills the whole room 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7)
 
     /// Point light for the camera 
     const pointLight = new THREE.PointLight(0xffffff, 0.5, 18)
@@ -99,6 +100,7 @@ export default class Game {
   }
 
   private handlePressedKeys() {
+    const speed = this.player.speed
     if(this.pressedKeys[87]){ // W key
       console.log("DidPress W key")
       this.camera.position.x -= Math.sin(this.camera.rotation.y) * this.player.speed;
@@ -118,18 +120,22 @@ export default class Game {
     }
     
     if(this.pressedKeys[37]){ // left arrow key
-      this.camera.rotation.y -= this.player.turnSpeed;
+      this.camera.position.x += speed
+      this.cube.position.x += speed
     }
 
     if(this.pressedKeys[38]){ // Up arrow key
-      this.camera.rotation.x -= this.player.turnSpeed;
+      this.camera.position.z += speed
+      this.cube.position.z += speed
     }
     if(this.pressedKeys[39]){ // right arrow key
-      this.camera.rotation.y += this.player.turnSpeed;
+      this.camera.position.x -= speed
+      this.cube.position.x -= speed
     }
 
     if(this.pressedKeys[40]){ // down arrow key
-      this.camera.rotation.x += this.player.turnSpeed;
+      this.camera.position.z -= speed;
+      this.cube.position.z -= speed
     }
   }
 
