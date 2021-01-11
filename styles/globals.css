@@ -30,29 +30,3 @@ body {
   z-index: 1;
 }
 
-.modalContainerView {
-  position: absolute;
-  background-color: clear;
-  height: 100%;
-  width: 100%;
-  background-position:  100px 200px;
-  z-index: 2;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-.modalView {
-  height: 90%;
-  width: 20%;
-  background-color: white;
-  margin-right: 40px;
-  border-radius: 30px;
-  box-shadow:
-  0 2.8px 2.2px rgba(0, 0, 0, 0.034),
-  0 6.7px 5.3px rgba(0, 0, 0, 0.048),
-  0 12.5px 10px rgba(0, 0, 0, 0.06),
-  0 22.3px 17.9px rgba(0, 0, 0, 0.072),
-  0 41.8px 33.4px rgba(0, 0, 0, 0.086),
-  0 100px 80px rgba(0, 0, 0, 0.12)
-}

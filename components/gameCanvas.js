@@ -39,7 +39,7 @@ export default function GameCanvas() {
     }
 
     const handleResize = () => {
-      game.handleResize(height, width)
+      game.handleResize(mount.current.clientHeight, mount.current.clientWidth)
     }
 
     function keyDown(event){

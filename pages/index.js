@@ -5,13 +5,13 @@ import Game from '../game/game'
 import * as THREE from 'three'
 import { GammaEncoding } from 'three'
 import GameCanvas from '../components/gameCanvas'
-import ModalNavigation from '../components/modalNavigation'
+import OverlayContainerView from '../components/overlayContainer'
 
 export default function Home() {
   return (
     <div>
       <GameCanvas/>
-      <ModalNavigation/>
+      <OverlayContainerView/>
     </div>
   )
 }

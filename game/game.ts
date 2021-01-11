@@ -29,7 +29,7 @@ export default class Game {
   }
   
   private setupCubeMesh() {
-    const geometry = new THREE.SphereGeometry(1)
+    const geometry = new THREE.SphereGeometry(1,20)
     const material = new THREE.MeshPhongMaterial({ color: 0xff00ff , wireframe: false })
     this.cube = new THREE.Mesh(geometry, material)
     this.cube.receiveShadow = true 
@@ -41,7 +41,7 @@ export default class Game {
 
   private setupCamera() {
     this.camera.position.set(-1, 20, -10);
-    this.camera.lookAt(new THREE.Vector3(0,this.player.height,0));
+    this.camera.lookAt(this.cube.position);
   }
 
   private setupGround() {
@@ -61,7 +61,7 @@ export default class Game {
 
   private setupLights() {
     /// Ambient light that fills the whole room 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
 
     /// Point light for the camera 
     const pointLight = new THREE.PointLight(0xffffff, 0.5, 18)
