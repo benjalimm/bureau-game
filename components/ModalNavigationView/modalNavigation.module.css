@@ -17,10 +17,10 @@
   align-items: center;
   min-height: 450px;
   height: 50%;
-  width: 320px;
+  width: 310px;
   background-color: white;
-  margin-top: 30px;
-  margin-right: 40px;
+  margin-top: 20px;
+  margin-right: 20px;
   border-radius: 25px;
   box-shadow:
   0 2.8px 2.2px rgba(0, 0, 0, 0.034),
@@ -31,8 +31,16 @@
   0 100px 80px rgba(0, 0, 0, 0.12)
 }
 
+.userList {
+  /* border: blue 1px solid; */
+  width: 100%;
+}
+
 .userCell {
   display: flex; 
+  justify-content: flex-start;
+  align-items: center;
+  /* border: red 1px solid */
 }
 
 .userCircleImage {
@@ -40,5 +48,10 @@
   width: 50px;
   border-radius: 50%;
   display:inline-block;
-  background-color: red;
+  background-color: lightgray;
+  margin-left: 20px;
+}
+
+.userName {
+  margin-left: 20px;
 }
