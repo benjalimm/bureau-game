@@ -9,6 +9,9 @@ import {
   FirebaseAuthProvider,
   FirebaseAuthConsumer,
 } from "@react-firebase/auth";
+import LoginPage from '../components/Onboarding/LoginPage'
+import Router from 'next/router'
+import Head from "next/head"
 
 export default function Home() {
   const connected = useSocket()
@@ -18,20 +21,43 @@ export default function Home() {
   }, [connected])
 
   return (
-    <FirebaseAuthProvider firebase={firebase} {...firebaseConfig}>
+    <div>
+      <Head>
+        <link
+          rel="preload"
+          href="/fonts/Inter/static/Inter-Regular.ttf"
+          as="font"
+          crossOrigin=""
+        />
+        <link
+          rel="preload"
+          href="/fonts/Inter/static/Inter-Medium.ttf"
+          as="font"
+          crossOrigin=""
+        />
+        <link
+          rel="preload"
+          href="/fonts/Inter/static/Inter-Bold.ttf"
+          as="font"
+          crossOrigin=""
+        />
+      </Head>
+      <FirebaseAuthProvider firebase={firebase} {...firebaseConfig}>
       <FirebaseAuthConsumer>
          { ({ isSignedIn, user, providerId }) => {
            return (
-            isSignedIn ? <Foo/> : <div>Need to login</div>
+            isSignedIn ? <GameView/> : Router.push('/login')
            )
          } 
         }
       </FirebaseAuthConsumer>
     </FirebaseAuthProvider>
+    </div>
+    
   )
 }
 
-const Foo = () => {
+const GameView = () => {
   return (
     <div>
       <GameCanvas/>
