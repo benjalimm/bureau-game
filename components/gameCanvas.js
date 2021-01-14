@@ -68,7 +68,11 @@ export default function GameCanvas() {
     return () => {
       stop()
       window.removeEventListener('resize', handleResize)
-      mount.current.removeChild(renderer.domElement)
+
+      if (mount.current) {
+        mount.current.removeChild(renderer.domElement)
+      }
+      
 
       game.deinitialize()
       // geometry.dispose()

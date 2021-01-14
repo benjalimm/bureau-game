@@ -10,15 +10,29 @@ import {
   FirebaseAuthConsumer,
 } from "@react-firebase/auth";
 import LoginPage from '../components/Onboarding/LoginPage'
-import Router from 'next/router'
+import Router from "next/router"
 import Head from "next/head"
 
 export default function Home() {
   const connected = useSocket()
+  const [isLoggedIn, setLoginState] = useState(true)
 
   useEffect(() => {
     console.log(`Connected: ${connected}`)
+    
   }, [connected])
+
+  useEffect(() => {
+    setLoginState(firebase.auth.isLoggedIn)
+  },[])
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      Router.push('/login')
+    }
+  }, [isLoggedIn])
+
+
 
   return (
     <div>
@@ -43,14 +57,7 @@ export default function Home() {
         />
       </Head>
       <FirebaseAuthProvider firebase={firebase} {...firebaseConfig}>
-      <FirebaseAuthConsumer>
-         { ({ isSignedIn, user, providerId }) => {
-           return (
-            isSignedIn ? <GameView/> : Router.push('/login')
-           )
-         } 
-        }
-      </FirebaseAuthConsumer>
+        <GameView/>
     </FirebaseAuthProvider>
     </div>
     
