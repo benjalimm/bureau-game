@@ -3,33 +3,13 @@ import React, { useEffect, useState } from 'react'
 import { setTokenSourceMapRange } from 'typescript';
 import 'firebase/auth'
 import firebase from 'firebase/app'
+import { socketManager, SocketSubscriber } from './SocketManager'
 
 const networkUrl = 'http://localhost:8000'
-const socket = io(networkUrl, {transports: ['websocket']})
+// const socket = io(networkUrl, {transports: ['websocket']})
 
 const urlWithPath = (path) => {
   return networkUrl + path
-}
-
-export const useSocket = () => {
-  console.log('useSocket')
-  const [connected,setConnected] = useState(false);
-
-  useEffect(() => {
-    socket.on('connect', () => {
-      console.log('Connected to socket')
-      setConnected(true)
-  
-      socket.on('disconnect', () => {
-        console.log('Disconnected from socket')
-        setConnected(false)
-      })
-    })
-
-
-  }, [])
-
-  return connected
 }
 
 export const makeRequest = async (url, method, body) => {

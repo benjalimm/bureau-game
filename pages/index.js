@@ -1,66 +1,37 @@
 import React, { useEffect, useRef, useState } from 'react'
 import GameCanvas from '../components/GameCanvas'
 import GameOverlay from '../components/GameOverlay'
-import { useSocket } from '../services/Networking'
 import "firebase/auth"
-import firebase from 'firebase/app'
 import { firebaseConfig } from '../configs/firebaseConfig'
 import {
   FirebaseAuthProvider,
-  FirebaseAuthConsumer,
 } from "@react-firebase/auth";
-import LoginPage from '../components/Onboarding/LoginPage'
+import { firebase, isUserLoggedIn } from '../services/Authentication'
 import Router from "next/router"
-import Head from "next/head"
 
 export default function Home() {
-  const connected = useSocket()
-  const [isLoggedIn, setLoginState] = useState(true)
+  const [isLoggedIn, setLoginState] = useState(null)
 
   useEffect(() => {
-    console.log(`Connected: ${connected}`)
-    
-  }, [connected])
+    setLoginState(isUserLoggedIn())
+  },[isLoggedIn])
 
   useEffect(() => {
-    setLoginState(firebase.auth.isLoggedIn)
-  },[])
-
-  useEffect(() => {
-    if (!isLoggedIn) {
+    if (isLoggedIn === false) {
       Router.push('/login')
+    } else {
+      Router.push('/')
     }
   }, [isLoggedIn])
 
 
-
   return (
-    <div>
-      <Head>
-        <link
-          rel="preload"
-          href="/fonts/Inter/static/Inter-Regular.ttf"
-          as="font"
-          crossOrigin=""
-        />
-        <link
-          rel="preload"
-          href="/fonts/Inter/static/Inter-Medium.ttf"
-          as="font"
-          crossOrigin=""
-        />
-        <link
-          rel="preload"
-          href="/fonts/Inter/static/Inter-Bold.ttf"
-          as="font"
-          crossOrigin=""
-        />
-      </Head>
-      <FirebaseAuthProvider firebase={firebase} {...firebaseConfig}>
-        <GameView/>
+    <FirebaseAuthProvider firebase={firebase} {...firebaseConfig}>
+        {isLoggedIn ? <GameView/> : () => {
+            setLoginState(false);
+            return <div>Loading</div>
+        }}
     </FirebaseAuthProvider>
-    </div>
-    
   )
 }
 

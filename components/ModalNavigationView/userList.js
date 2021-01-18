@@ -6,7 +6,7 @@ import React from 'react'
 export default function UserList({ users })  {
   return <div className={styles.userList}>
     {
-      users.map(user => <UserCell name={user.name}/>)
+      users.map((user, i) => <UserCell name={user.name} key={i}/>)
     }
   </div>
 }
