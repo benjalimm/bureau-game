@@ -6,27 +6,47 @@ import { firebaseConfig } from '../configs/firebaseConfig'
 import {
   FirebaseAuthProvider,
 } from "@react-firebase/auth";
-import { firebase, isUserLoggedIn } from '../services/Authentication'
+import { firebase, isUserLoggedIn, logout } from '../services/Authentication'
+import { joinChannel, leaveChannel } from '../services/AgoraManager'
 import Router from "next/router"
+
 
 export default function Home() {
   const [isLoggedIn, setLoginState] = useState(null)
+
+  
+
+
+  useEffect(() => {
+    
+    // joinChannel()
+    // .then(() => {
+    //   console.log("Succesfully joined channel")
+    // }).catch(err =>{
+    //   console.log(`Error with joining channel ${err}`)
+    // })
+
+
+    
+    
+  }, [])
 
   useEffect(() => {
     setLoginState(isUserLoggedIn())
   },[isLoggedIn])
 
   useEffect(() => {
+    logout()
     if (isLoggedIn === false) {
       Router.push('/login')
-    } else {
+    } else if (isLoggedIn === true){
       Router.push('/')
     }
   }, [isLoggedIn])
 
-
+  console.log(`isLoggedIn: ${isLoggedIn}`)
   return (
-    <FirebaseAuthProvider firebase={firebase} {...firebaseConfig}>
+    <FirebaseAuthProvider firebase={firebase} {...firebaseConfig} databaseURL=""> 
         {isLoggedIn ? <GameView/> : () => {
             setLoginState(false);
             return <div>Loading</div>
@@ -34,6 +54,7 @@ export default function Home() {
     </FirebaseAuthProvider>
   )
 }
+
 
 const GameView = () => {
   return (

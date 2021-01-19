@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@react-firebase/auth": "^0.2.10",
-    "agora-rtc-sdk": "^3.3.1",
+    "agora-rtc-sdk-ng": "^4.2.1",
     "firebase": "^8.2.2",
     "next": "10.0.5",
     "react": "17.0.1",

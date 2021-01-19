@@ -22,7 +22,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-, "services/SocketManager.js"  ],
+, "services/SocketManager.js", "services/Networking.ts", "components/Onboarding/LoginPage.js", "services/Authentication.js"  ],
   "exclude": [
     "node_modules"
   ]
