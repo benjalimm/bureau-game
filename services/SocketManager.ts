@@ -10,8 +10,13 @@ export interface SocketSubscriber {
   onDisconnect(): void;
 }
 
+interface SocketUserDetails {
+  uid: string;
+  agoraUid: string;
+}
+
 export class SocketManager {
-  socketClient: Socket;
+  socketClient?: Socket;
   currentIdToken: string;
   subscribers: SocketSubscriber[]
 
@@ -23,13 +28,17 @@ export class SocketManager {
     this.currentIdToken = await firebase.auth().currentUser?.getIdToken() ?? ""
     this.socketClient = io(NETWORK_URL, {
       transports: ['websocket'],
-      extraHeaders: {
-        Authorization: `Bearer: ${this.currentIdToken}`
+      auth: (cb) => {
+        cb({ token: this.currentIdToken})
       }
     })
   }
 
   async connect() {
+    if (this.socketClient) {
+      this.socketClient.disconnect()
+    }
+    
     await this.init() /// Reinitialize
     this.socketClient.on('connect' , () => {
       this.subscribers.forEach(s => {
@@ -47,6 +56,23 @@ export class SocketManager {
 
   addSubscriber(subscriber: SocketSubscriber) {
     this.subscribers.push(subscriber);
+  }
+
+
+  emit(event: string, data: any) {
+    const userId = firebase.auth().currentUser.uid
+
+    const userDetails: SocketUserDetails =  {
+      uid: userId,
+      agoraUid: "123"
+    }
+    data.user = userDetails
+    this.socketClient.emit(event, data)
+
+  }
+
+  joinRoom(roomId: string) {
+    this.emit("joinRoom", { roomId: roomId })
   }
 }
 

@@ -34,6 +34,7 @@ export default function LoginPage () {
 
   const didTapJoinRoom = async () => {
     await socketManager.connect();
+    socketManager.joinRoom(roomId)
     Router.push('/')
   }
 
