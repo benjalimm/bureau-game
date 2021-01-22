@@ -13,6 +13,7 @@ export default function GameCanvas() {
   const game = new Game()
 
   useEffect(() => {
+    Game.current = game 
     let width = mount.current.clientWidth
     let height = mount.current.clientHeight
     let frameId: number;

@@ -1,8 +1,11 @@
 import * as THREE from 'three'
 import { Light } from 'three'
-
+import { socketManager } from '../services/SocketManager'
+import { GameData } from '../models/GameStates'
+import { Z_ASCII } from 'zlib'
 
 export default class Game {
+  static current?: Game
   renderer?: THREE.WebGLRenderer
   camera?: THREE.PerspectiveCamera
   scene?: THREE.Scene
@@ -120,23 +123,62 @@ export default class Game {
     }
     
     if(this.pressedKeys[37]){ // left arrow key
-      this.camera.position.x += speed
-      this.cube.position.x += speed
+      // this.camera.position.x += speed
+      // this.cube.position.x += speed
+      socketManager.emitMovement("ABC", {
+        x: speed,
+        y: 0,
+        z: 0
+      })
     }
 
     if(this.pressedKeys[38]){ // Up arrow key
-      this.camera.position.z += speed
-      this.cube.position.z += speed
+      // this.camera.position.z += speed
+      // this.cube.position.z += speed
+
+      socketManager.emitMovement("ABC", {
+        x: 0,
+        y: 0,
+        z: speed
+      })
     }
     if(this.pressedKeys[39]){ // right arrow key
-      this.camera.position.x -= speed
-      this.cube.position.x -= speed
+      // this.camera.position.x -= speed
+      // this.cube.position.x -= speed
+
+      socketManager.emitMovement("ABC", {
+        x: -speed,
+        y: 0,
+        z: 0
+      })
     }
 
     if(this.pressedKeys[40]){ // down arrow key
-      this.camera.position.z -= speed;
-      this.cube.position.z -= speed
+      // this.camera.position.z -= speed;
+      // this.cube.position.z -= speed
+
+      socketManager.emitMovement("ABC", {
+        x: 0,
+        y: 0,
+        z: -speed
+      })
     }
+  }
+
+  didReceiveGameData(gameData: GameData) {
+    console.log("didReceiveGameData")
+    gameData.userMovements.forEach(movement => {
+      const changeInPosition = movement.changeInPosition
+      if (changeInPosition) {
+        this.cube.position.x += changeInPosition.x
+        this.cube.position.y += changeInPosition.y
+        this.cube.position.z += changeInPosition.z
+
+        this.camera.position.x += changeInPosition.x
+        this.camera.position.y += changeInPosition.y
+        this.camera.position.z += changeInPosition.z
+      }
+    })
   }
 
   

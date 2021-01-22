@@ -36,7 +36,6 @@ export default function Home() {
   },[isLoggedIn])
 
   useEffect(() => {
-    logout()
     if (isLoggedIn === false) {
       Router.push('/login')
     } else if (isLoggedIn === true){

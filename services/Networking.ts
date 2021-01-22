@@ -5,7 +5,7 @@ import 'firebase/auth'
 import firebase from 'firebase/app'
 import { socketManager, SocketSubscriber } from './SocketManager'
 
-const networkUrl = 'http://localhost:8000'
+const networkUrl = 'https://desolate-anchorage-45430.herokuapp.com'
 // const socket = io(networkUrl, {transports: ['websocket']})
 
 const urlWithPath = (path) => {
