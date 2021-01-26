@@ -1,8 +1,9 @@
 import * as THREE from 'three'
 import { Light } from 'three'
 import { socketManager } from '../services/SocketManager'
-import { GameData } from '../models/GameStates'
-import { Z_ASCII } from 'zlib'
+import { UserState, GameData, Position } from '../models/GameStates'
+import { HashTable } from '../models/Common';
+
 
 export default class Game {
   static current?: Game
@@ -12,6 +13,11 @@ export default class Game {
   cube?: THREE.Mesh
 
   pressedKeys = {}
+
+  userStates: UserState[]
+  userMeshesTable: HashTable<THREE.Mesh>
+
+
   player = { height:1.8, speed:0.2, turnSpeed:Math.PI*0.02 };
 
 
@@ -182,10 +188,42 @@ export default class Game {
   }
 
   
-
-
   keyDidInteract(keyCode: number, didPress: boolean) {
     this.pressedKeys[keyCode] = didPress 
+  }
+
+  addUserMesh(uid: string, position: Position) {
+    const existingMesh = this.userMeshesTable[uid]
+
+    if (existingMesh) {
+      this.scene.remove(existingMesh)
+    }
+    
+    const userMesh = this.createNewSphereMesh()
+    this.userMeshesTable[uid] = userMesh 
+    this.scene.add(userMesh)
+
+    /// Set initial position 
+    userMesh.position.x = position.x
+    userMesh.position.z = position.y
+    userMesh.position.y = position.z
+  }
+
+  private createNewSphereMesh(): THREE.Mesh {
+    const geometry = new THREE.SphereGeometry(1,20)
+    const material = new THREE.MeshPhongMaterial({ color: 0xff00ff , wireframe: false })
+    const mesh = new THREE.Mesh(geometry, material)
+    mesh.receiveShadow = true 
+    mesh.castShadow = true
+    return mesh 
+  }
+
+  initializeInitialUserStates(userStates: UserState[]) {
+    this.userStates = userStates;
+
+    userStates.forEach(userState => {
+      this.addUserMesh(userState.uid, userState.position)
+    })
   }
 
 }

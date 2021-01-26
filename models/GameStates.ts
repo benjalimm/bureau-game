@@ -1,5 +1,5 @@
 
-export interface Vector {
+export interface Position {
   x: number,
   y: number,
   z: number
@@ -7,14 +7,14 @@ export interface Vector {
 
 export interface UserState {
   uid: string;
-  position: Vector;
+  position: Position;
   // direction: number;
 }
 
 export interface UserMovement {
   uid: string;
   movementType: "WALK" | "JOINED";
-  changeInPosition?: Vector;
+  changeInPosition?: Position;
   // changeInDirection?: number; 
 }
 

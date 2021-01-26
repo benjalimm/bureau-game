@@ -16,21 +16,6 @@ export default function Home() {
 
   
 
-
-  useEffect(() => {
-    
-    // joinChannel()
-    // .then(() => {
-    //   console.log("Succesfully joined channel")
-    // }).catch(err =>{
-    //   console.log(`Error with joining channel ${err}`)
-    // })
-
-
-    
-    
-  }, [])
-
   useEffect(() => {
     setLoginState(isUserLoggedIn())
   },[isLoggedIn])

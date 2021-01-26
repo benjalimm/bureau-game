@@ -5,11 +5,17 @@ import 'firebase/auth'
 import firebase from 'firebase/app'
 import { socketManager, SocketSubscriber } from './SocketManager'
 
+let _IS_LOCAL = true 
 const networkUrl = 'https://desolate-anchorage-45430.herokuapp.com'
+const localUrl = 'localhost:8000'
 // const socket = io(networkUrl, {transports: ['websocket']})
 
-const urlWithPath = (path) => {
-  return networkUrl + path
+export const urlWithPath = (path) => {
+  let url = networkUrl
+  if (_IS_LOCAL) {
+    url = localUrl
+  }
+  return url + path
 }
 
 export const makeRequest = async (url, method, body) => {

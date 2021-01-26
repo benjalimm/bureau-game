@@ -2,11 +2,12 @@ import { io, Socket } from 'socket.io-client';
 import 'firebase/auth'
 import { firebase } from './Authentication'
 import { ClientSocketData } from '../models/SocketData';
-import { GameData, Vector } from '../models/GameStates'
+import { GameData, Position } from '../models/GameStates'
 import Game from '../game/game';
+import { urlWithPath } from './Networking'
 // import firebase from 'firebase/app'
 
-const NETWORK_URL = 'https://desolate-anchorage-45430.herokuapp.com'
+const NETWORK_URL = urlWithPath('')
 
 export interface SocketSubscriber {
   onConnect(): void;
@@ -71,6 +72,10 @@ export class SocketManager {
       this.socketClient.on('connect_timeout', function(err) {
         console.log("client connect_timeout: ", err);
       });
+
+      this.socketClient.on('didInitialize', (data) => {
+        
+      })
     })
 
 
@@ -99,7 +104,7 @@ export class SocketManager {
     this.emit("joinRoom", null, { roomId: roomId })
   }
 
-  emitMovement(roomId: string, movement: Vector) {
+  emitMovement(roomId: string, movement: Position) {
     this.emit("movement", roomId, movement)
   }
 }
