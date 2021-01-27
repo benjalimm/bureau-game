@@ -7,7 +7,7 @@ import { socketManager, SocketSubscriber } from './SocketManager'
 
 let _IS_LOCAL = true 
 const networkUrl = 'https://desolate-anchorage-45430.herokuapp.com'
-const localUrl = 'localhost:8000'
+const localUrl = 'http://localhost:8000'
 // const socket = io(networkUrl, {transports: ['websocket']})
 
 export const urlWithPath = (path) => {

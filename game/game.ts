@@ -3,6 +3,8 @@ import { Light } from 'three'
 import { socketManager } from '../services/SocketManager'
 import { UserState, GameData, Position } from '../models/GameStates'
 import { HashTable } from '../models/Common';
+import { RoomParticipant } from '../models/User';
+import { Room } from './Room'
 
 
 export default class Game {
@@ -11,11 +13,12 @@ export default class Game {
   camera?: THREE.PerspectiveCamera
   scene?: THREE.Scene
   cube?: THREE.Mesh
+  currentRoom: Room
 
   pressedKeys = {}
 
   userStates: UserState[]
-  userMeshesTable: HashTable<THREE.Mesh>
+  userMeshesTable: HashTable<THREE.Mesh> = {}
 
 
   player = { height:1.8, speed:0.2, turnSpeed:Math.PI*0.02 };
@@ -175,14 +178,15 @@ export default class Game {
     console.log("didReceiveGameData")
     gameData.userMovements.forEach(movement => {
       const changeInPosition = movement.changeInPosition
-      if (changeInPosition) {
-        this.cube.position.x += changeInPosition.x
-        this.cube.position.y += changeInPosition.y
-        this.cube.position.z += changeInPosition.z
+      const mesh: THREE.Mesh | undefined = this.userMeshesTable[movement.uid]
+      if (changeInPosition && mesh) {
+        mesh.position.x += changeInPosition.x
+        mesh.position.y += changeInPosition.y
+        mesh.position.z += changeInPosition.z
 
-        this.camera.position.x += changeInPosition.x
-        this.camera.position.y += changeInPosition.y
-        this.camera.position.z += changeInPosition.z
+        mesh.position.x += changeInPosition.x
+        mesh.position.y += changeInPosition.y
+        mesh.position.z += changeInPosition.z
       }
     })
   }
@@ -224,6 +228,11 @@ export default class Game {
     userStates.forEach(userState => {
       this.addUserMesh(userState.uid, userState.position)
     })
+  }
+
+  initializeRoom(roomId: string, participants: RoomParticipant[]) {
+    this.currentRoom = new Room(roomId);
+    this.currentRoom.participants = participants
   }
 
 }

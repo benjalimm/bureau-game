@@ -2,9 +2,10 @@ import { io, Socket } from 'socket.io-client';
 import 'firebase/auth'
 import { firebase } from './Authentication'
 import { ClientSocketData } from '../models/SocketData';
-import { GameData, Position } from '../models/GameStates'
+import { GameData, Position, UserState } from '../models/GameStates'
 import Game from '../game/game';
 import { urlWithPath } from './Networking'
+import { RoomParticipant } from '../models/User';
 // import firebase from 'firebase/app'
 
 const NETWORK_URL = urlWithPath('')
@@ -74,7 +75,17 @@ export class SocketManager {
       });
 
       this.socketClient.on('didInitialize', (data) => {
-        
+        console.log("didInitialize")
+        console.log(data)
+        const userStates = data.userStates as UserState[]
+        const participants = data.participants as RoomParticipant[]
+        const roomId = data.roomId as string;
+
+        /// Initialize initial user states
+        Game.current?.initializeInitialUserStates(userStates)
+
+        /// Initialize initial room participants
+        Game.current?.initializeRoom(roomId, participants)
       })
     })
 
