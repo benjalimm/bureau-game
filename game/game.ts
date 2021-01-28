@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { Light } from 'three'
+import { CameraHelper, Light } from 'three'
 import { socketManager } from '../services/SocketManager'
 import { UserState, GameData, Position } from '../models/GameStates'
 import { HashTable } from '../models/Common';
@@ -12,7 +12,7 @@ export default class Game {
   renderer?: THREE.WebGLRenderer
   camera?: THREE.PerspectiveCamera
   scene?: THREE.Scene
-  cube?: THREE.Mesh
+  // cube?: THREE.Mesh
   currentRoom: Room
 
   pressedKeys = {}
@@ -33,27 +33,15 @@ export default class Game {
     
     this.renderer.setClearColor('#000000')
     this.renderer.setSize(width, height)
-    this.setupCubeMesh()
     this.setupGround()
     this.setupCamera()
     this.setupShadows()
     this.setupLights()
   }
-  
-  private setupCubeMesh() {
-    const geometry = new THREE.SphereGeometry(1,20)
-    const material = new THREE.MeshPhongMaterial({ color: 0xff00ff , wireframe: false })
-    this.cube = new THREE.Mesh(geometry, material)
-    this.cube.receiveShadow = true 
-    this.cube.castShadow = true
-    this.cube.position.y += 1
-    this.camera.position.z = 20
-    this.scene.add(this.cube)
-  }
+
 
   private setupCamera() {
     this.camera.position.set(-1, 20, -10);
-    this.camera.lookAt(this.cube.position);
   }
 
   private setupGround() {
@@ -99,16 +87,17 @@ export default class Game {
   }
 
   animate() {
-    this.cube.rotation.x += 0.01
-    this.cube.rotation.y += 0.01
-
     this.handlePressedKeys()
-    
     this.renderScene()
   }
 
   deinitialize() {
-    this.scene.remove(this.cube)
+
+    Object.keys(this.userMeshesTable).forEach(key => {
+      const mesh = this.userMeshesTable[key]
+      this.scene.remove(mesh)
+    })    
+    
   }
 
   private handlePressedKeys() {
@@ -174,7 +163,7 @@ export default class Game {
     }
   }
 
-  didReceiveGameData(gameData: GameData) {
+  didReceiveGameData(gameData: GameData, uid: string) {
     console.log("didReceiveGameData")
     gameData.userMovements.forEach(movement => {
       const changeInPosition = movement.changeInPosition
@@ -184,9 +173,23 @@ export default class Game {
         mesh.position.y += changeInPosition.y
         mesh.position.z += changeInPosition.z
 
-        mesh.position.x += changeInPosition.x
-        mesh.position.y += changeInPosition.y
-        mesh.position.z += changeInPosition.z
+
+        /// If movement is user's
+        if (movement.uid === uid) {
+          this.camera.position.x += changeInPosition.x
+          this.camera.position.y += changeInPosition.y
+          this.camera.position.z += changeInPosition.z
+        }
+      }
+    })
+
+    gameData.userStates.forEach(userState => {
+      const mesh: THREE.Mesh | undefined = this.userMeshesTable[userState.uid]
+
+      if (mesh) {
+        mesh.position.x = userState.position.x
+        mesh.position.y = userState.position.y
+        mesh.position.z = userState.position.z
       }
     })
   }
@@ -196,10 +199,11 @@ export default class Game {
     this.pressedKeys[keyCode] = didPress 
   }
 
-  addUserMesh(uid: string, position: Position) {
+  addUserMesh(uid: string, position: Position): THREE.Mesh {
     const existingMesh = this.userMeshesTable[uid]
 
     if (existingMesh) {
+
       this.scene.remove(existingMesh)
     }
     
@@ -211,6 +215,7 @@ export default class Game {
     userMesh.position.x = position.x
     userMesh.position.z = position.y
     userMesh.position.y = position.z
+    return userMesh
   }
 
   private createNewSphereMesh(): THREE.Mesh {
@@ -222,18 +227,29 @@ export default class Game {
     return mesh 
   }
 
-  initializeInitialUserStates(userStates: UserState[]) {
+  initializeInitialUserStates(userStates: UserState[], userId: string) {
     this.userStates = userStates;
 
     userStates.forEach(userState => {
       this.addUserMesh(userState.uid, userState.position)
     })
+
+    this.attachCameraToUser(userId)
   }
 
   initializeRoom(roomId: string, participants: RoomParticipant[]) {
     this.currentRoom = new Room(roomId);
     this.currentRoom.participants = participants
   }
+
+  attachCameraToUser(uid: string) {
+    const userMesh: THREE.Mesh | undefined = this.userMeshesTable[uid]
+
+    if (userMesh) {
+      this.camera.lookAt(userMesh.position);  
+    }
+  }
+
 
 }
 

@@ -6,7 +6,6 @@ import { GameData, Position, UserState } from '../models/GameStates'
 import Game from '../game/game';
 import { urlWithPath } from './Networking'
 import { RoomParticipant } from '../models/User';
-// import firebase from 'firebase/app'
 
 const NETWORK_URL = urlWithPath('')
 
@@ -63,7 +62,7 @@ export class SocketManager {
         console.log(`Received Socket data: ${data}`)
         console.log(data)
         const gameData = data as GameData 
-        Game.current.didReceiveGameData(gameData)
+        Game.current.didReceiveGameData(gameData, firebase.auth().currentUser.uid)
       })
 
       this.socketClient.on('connect_error', function(err) {
@@ -82,10 +81,18 @@ export class SocketManager {
         const roomId = data.roomId as string;
 
         /// Initialize initial user states
-        Game.current?.initializeInitialUserStates(userStates)
+        Game.current?.initializeInitialUserStates(userStates, firebase.auth().currentUser.uid)
 
         /// Initialize initial room participants
         Game.current?.initializeRoom(roomId, participants)
+      })
+
+      this.socketClient.on('didJoin', (data) => {
+        const participant = data.participant as RoomParticipant
+        console.log(`${participant.name} just joined`)
+        /// Initialize initial room participants
+        Game.current?.currentRoom.addParticipant(participant)
+        Game.current?.addUserMesh(participant.uid, { x: 1, y: 1, z: 1})
       })
     })
 
