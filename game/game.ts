@@ -5,6 +5,7 @@ import { UserState, GameData, Position } from '../models/GameStates'
 import { HashTable } from '../models/Common';
 import { RoomParticipant } from '../models/User';
 import { Room } from './Room'
+import { pathToFileURL } from 'url';
 
 
 export default class Game {
@@ -199,14 +200,18 @@ export default class Game {
     this.pressedKeys[keyCode] = didPress 
   }
 
-  addUserMesh(uid: string, position: Position): THREE.Mesh {
+  removeUserMesh(uid: string) {
     const existingMesh = this.userMeshesTable[uid]
-
     if (existingMesh) {
-
       this.scene.remove(existingMesh)
     }
-    
+  }
+
+  addUserMesh(uid: string, position: Position): THREE.Mesh {
+
+    /// Remove existing user mesh if it exists
+    this.removeUserMesh(uid); 
+
     const userMesh = this.createNewSphereMesh()
     this.userMeshesTable[uid] = userMesh 
     this.scene.add(userMesh)
@@ -217,6 +222,18 @@ export default class Game {
     userMesh.position.y = position.z
     return userMesh
   }
+
+  participantDidJoinRoom(participant: RoomParticipant) {
+    this.currentRoom.addParticipant(participant)
+    this.addUserMesh(participant.uid, { x: 1, y: 1, z: 1})
+  }
+
+  participantDidLeaveRoom(participant: RoomParticipant) {
+    this.currentRoom.removeParticipant(participant.uid)
+    this.removeUserMesh(participant.uid);
+  }
+
+
 
   private createNewSphereMesh(): THREE.Mesh {
     const geometry = new THREE.SphereGeometry(1,20)

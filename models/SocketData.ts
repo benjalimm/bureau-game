@@ -15,3 +15,9 @@ export interface SocketUserDetails {
   currentRoomId?: string | null;
   agoraUid: string;
 }
+
+export interface SocketError {
+  errorType: string;
+  errorMessage: string;
+  data?: any;
+}

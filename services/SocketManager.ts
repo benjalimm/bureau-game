@@ -91,8 +91,16 @@ export class SocketManager {
         const participant = data.participant as RoomParticipant
         console.log(`${participant.name} just joined`)
         /// Initialize initial room participants
-        Game.current?.currentRoom.addParticipant(participant)
-        Game.current?.addUserMesh(participant.uid, { x: 1, y: 1, z: 1})
+        Game.current?.participantDidJoinRoom(participant)
+      })
+
+      this.socketClient.on('didLeave', (data) => {
+        const participant = data.participant as RoomParticipant
+        Game.current?.participantDidLeaveRoom(participant);
+      })
+
+      this.socketClient.on('bureauGameError', (data) => {
+        console.log(data)
       })
     })
 
