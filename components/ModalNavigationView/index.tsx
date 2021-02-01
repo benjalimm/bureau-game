@@ -1,33 +1,42 @@
 import styles from './modalNavigation.module.css'
 import React, { useEffect, useState } from 'react'
 import { RoomParticipant } from '../../models/User'
-import Game from '../../game'
+import Game from '../../game/Game'
+import { gameManager } from '../../game/GameManager';
 import UserList from './UserList'
 
 export default function ModalNavigationView() {
 
-  const [participants, setParticipants] = useState<RoomParticipant[]>()
+  const [participants, setParticipants] = useState<RoomParticipant[]>([])
+  const [currentGame, setCurrentGame] = useState<Game>(null)
 
-  const users = [
-    { name: "Benjamin Lim" },
-    { name: "Lana Toogood" },
-    { name: "Steven Lim" },
-    { name: "James Stewart" },
-    { name: "Cheryl Lim" }
-]
+  useEffect(() => {
+    console.log("Game use effect triggered")
+    currentGame?.onParticipantChangeEvent("Join", (joiningParticipant, currentParticipants) => {
+      console.log("Participant joined")
+      console.log(currentParticipants)
 
-useEffect(() => {
-  Game.current!.onParticipantChangeEvent("Join", (joiningParticipant, currentParticipants) => {
-    setParticipants(currentParticipants);
-  })
-}, [])
+      setParticipants(currentParticipants);
+    })
 
-useEffect(() => {
-  Game.current!.onParticipantChangeEvent("Leave", (leavingParticipant, currentParticipants) => {
-    setParticipants(currentParticipants);
-  })
-}, [])
+    currentGame?.onParticipantChangeEvent("Leave", (leavingParticipant, currentParticipants) => {
+      console.log("Participant left")
+      console.log(currentParticipants)
+      setParticipants(currentParticipants);
+    })
 
+    currentGame?.onParticipantChangeEvent("Initialized", (_, currentParticipants) => {
+      console.log("Participants initialized")
+      setParticipants(currentParticipants);
+    })
+  }, [currentGame])
+
+  useEffect(() => {
+    gameManager.onGameChange((game) => {
+      console.log("Game has been changed")
+      setCurrentGame(game);
+    })
+  },[])
 
   return  (<div className={styles.modalView}>
       <h3> Benjamin's lobby</h3>

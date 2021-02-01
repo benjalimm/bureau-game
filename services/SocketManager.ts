@@ -2,8 +2,9 @@ import { io, Socket } from 'socket.io-client';
 import 'firebase/auth'
 import { firebase } from './Authentication'
 import { ClientSocketData } from '../models/SocketData';
-import { GameData, Position, UserState } from '../models/GameStates'
-import Game from '../game/game';
+import { GameData, Position, UserState } from '../models/Game'
+import Game from '../game/Game';
+import { gameManager } from '../game/GameManager'
 import { urlWithPath } from './Networking'
 import { RoomParticipant } from '../models/User';
 import agoraManager from './AgoraManager';
@@ -13,7 +14,6 @@ export interface SocketSubscriber {
   onConnect(): void;
   onDisconnect(): void;
 }
-
 
 export class SocketManager {
   socketClient?: Socket;
@@ -62,7 +62,7 @@ export class SocketManager {
         console.log(`Received Socket data: ${data}`)
         console.log(data)
         const gameData = data as GameData 
-        Game.current.didReceiveGameData(gameData, firebase.auth().currentUser.uid)
+        gameManager.currentGame?.didReceiveGameData(gameData, firebase.auth().currentUser.uid)
       })
 
       this.socketClient.on('connect_error', function(err) {
@@ -81,22 +81,22 @@ export class SocketManager {
         const roomId = data.roomId as string;
 
         /// Initialize initial user states
-        Game.current?.initializeInitialUserStates(userStates, firebase.auth().currentUser.uid)
+        gameManager.currentGame?.initializeInitialUserStates(userStates, firebase.auth().currentUser.uid)
 
         /// Initialize initial room participants
-        Game.current?.initializeRoom(roomId, participants)
+        gameManager.currentGame?.initializeRoom(roomId, participants)
       })
 
       this.socketClient.on('didJoin', (data) => {
         const participant = data.participant as RoomParticipant
         console.log(`${participant.name} just joined`)
         /// Initialize initial room participants
-        Game.current?.participantDidJoinRoom(participant)
+        gameManager.currentGame?.participantDidJoinRoom(participant)
       })
 
       this.socketClient.on('didLeave', (data) => {
         const participant = data.participant as RoomParticipant
-        Game.current?.participantDidLeaveRoom(participant);
+        gameManager.currentGame?.participantDidLeaveRoom(participant);
       })
 
       this.socketClient.on('bureauGameError', (data) => {

@@ -1,9 +1,7 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
 import React, { useEffect, useRef, useState } from 'react'
-import Game from '../game/game'
+import Game from '../game/Game'
+import { gameManager } from '../game/GameManager'
 import * as THREE from 'three'
-import { GammaEncoding } from 'three'
 
 
 export default function GameCanvas() {
@@ -13,7 +11,7 @@ export default function GameCanvas() {
   const game = new Game()
 
   useEffect(() => {
-    Game.current = game 
+    gameManager.setCurrentGame(game);
     let width = mount.current.clientWidth
     let height = mount.current.clientHeight
     let frameId: number;

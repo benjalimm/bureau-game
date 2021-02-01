@@ -7,14 +7,13 @@ import { RoomParticipant } from '../models/User';
 import { Room } from './Room'
 
 
-type ParticipantChangeEvent = "Join" | "Leave"
+type ParticipantChangeEvent = "Join" | "Leave" | "Initialized"
 type ParticipantChangeFunction = (
-  participant: RoomParticipant, 
+  participant: RoomParticipant | null, 
   currentParticipants: RoomParticipant[]) 
   => void
 
 export default class Game {
-  static current?: Game
   renderer?: THREE.WebGLRenderer
   camera?: THREE.PerspectiveCamera
   scene?: THREE.Scene
@@ -37,7 +36,7 @@ export default class Game {
     this.camera = new THREE.PerspectiveCamera(90, width/height, 0.1, 1000)
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
     
-    
+
     this.renderer.setClearColor('#000000')
     this.renderer.setSize(width, height)
     this.setupGround()
@@ -231,13 +230,13 @@ export default class Game {
 
   participantDidJoinRoom(participant: RoomParticipant) {
     this.currentRoom.addParticipant(participant)
-    this.onParticipantChange("Join", participant)
+    this.onParticipantChange("Join", participant, this.currentRoom.participants)
     this.addUserMesh(participant.uid, { x: 1, y: 1, z: 1})
   }
 
   participantDidLeaveRoom(participant: RoomParticipant) {
     this.currentRoom.removeParticipant(participant.uid)
-    this.onParticipantChange("Leave", participant)
+    this.onParticipantChange("Leave", participant, this.currentRoom.participants)
     this.removeUserMesh(participant.uid);
   }
 
@@ -265,6 +264,7 @@ export default class Game {
   initializeRoom(roomId: string, participants: RoomParticipant[]) {
     this.currentRoom = new Room(roomId);
     this.currentRoom.participants = participants
+    this.onParticipantChange("Initialized", null, participants)
   }
 
   attachCameraToUser(uid: string) {
@@ -285,10 +285,11 @@ export default class Game {
 
   private onParticipantChange(
     event: ParticipantChangeEvent, 
-    participant: RoomParticipant) {
+    changingParticipant: RoomParticipant | null, 
+    currentParticipants: RoomParticipant[]) {
     const func = this.listenerHashTable[event]
     if(func) {
-      func(participant, this.currentRoom.participants)
+      func(changingParticipant, currentParticipants)
     }
   }
 

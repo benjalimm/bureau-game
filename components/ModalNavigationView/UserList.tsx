@@ -8,9 +8,10 @@ type ListProps = { participants: RoomParticipant[] }
 export default function UserList(props: ListProps)  {
   return <div className={styles.userList}>
     {
-      props.participants.map((user, i) => <UserCell name={user.name} 
+      props.participants.map((user, i) => 
+      <UserCell name={user.name} 
       imgLink={user.profileImage.main}
-      key={i}
+      key={user.uid}
       />)
     }
   </div>
