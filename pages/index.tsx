@@ -7,7 +7,6 @@ import {
   FirebaseAuthProvider,
 } from "@react-firebase/auth";
 import { firebase, isUserLoggedIn, logout } from '../services/Authentication'
-import { joinChannel, leaveChannel } from '../services/AgoraManager'
 import Router from "next/router"
 
 

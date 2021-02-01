@@ -3,10 +3,11 @@ import style from './onboarding.module.css'
 import { firebase, loginWithTwitter, isUserLoggedIn } from '../../services/Authentication'
 import "firebase/auth"
 import { socketManager } from '../../services/SocketManager'
-import { joinChannel, leaveChannel } from '../../services/AgoraManager'
+import agoraManager from '../../services/AgoraManager'
 import Login from './Login'
 import JoinRoom from './JoinRoom'
 import Router from 'next/router'
+import { join } from 'path'
 
 
 
@@ -34,7 +35,9 @@ export default function LoginPage () {
 
   const didTapJoinRoom = async () => {
     await socketManager.connect();
-    socketManager.joinRoom(roomId)
+    const agoraUid = await agoraManager.joinChannel()
+    socketManager.joinRoom(roomId, `${agoraUid}`)
+    await agoraManager.setupAudio()
     Router.push('/')
   }
 

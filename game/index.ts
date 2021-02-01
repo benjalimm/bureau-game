@@ -1,25 +1,31 @@
 import * as THREE from 'three'
 import { CameraHelper, Light } from 'three'
 import { socketManager } from '../services/SocketManager'
-import { UserState, GameData, Position } from '../models/GameStates'
+import { UserState, GameData, Position } from '../models/Game'
 import { HashTable } from '../models/Common';
 import { RoomParticipant } from '../models/User';
 import { Room } from './Room'
-import { pathToFileURL } from 'url';
 
+
+type ParticipantChangeEvent = "Join" | "Leave"
+type ParticipantChangeFunction = (
+  participant: RoomParticipant, 
+  currentParticipants: RoomParticipant[]) 
+  => void
 
 export default class Game {
   static current?: Game
   renderer?: THREE.WebGLRenderer
   camera?: THREE.PerspectiveCamera
   scene?: THREE.Scene
-  // cube?: THREE.Mesh
   currentRoom: Room
 
   pressedKeys = {}
 
   userStates: UserState[]
   userMeshesTable: HashTable<THREE.Mesh> = {}
+  
+  listenerHashTable: HashTable<ParticipantChangeFunction> = {}
 
 
   player = { height:1.8, speed:0.2, turnSpeed:Math.PI*0.02 };
@@ -225,11 +231,13 @@ export default class Game {
 
   participantDidJoinRoom(participant: RoomParticipant) {
     this.currentRoom.addParticipant(participant)
+    this.onParticipantChange("Join", participant)
     this.addUserMesh(participant.uid, { x: 1, y: 1, z: 1})
   }
 
   participantDidLeaveRoom(participant: RoomParticipant) {
     this.currentRoom.removeParticipant(participant.uid)
+    this.onParticipantChange("Leave", participant)
     this.removeUserMesh(participant.uid);
   }
 
@@ -264,6 +272,23 @@ export default class Game {
 
     if (userMesh) {
       this.camera.lookAt(userMesh.position);  
+    }
+  }
+
+  onParticipantChangeEvent(event: ParticipantChangeEvent, func: ParticipantChangeFunction) {
+    this.listenerHashTable[event] = func;
+  }
+
+  removeParticipantChangeEventListener(event: ParticipantChangeEvent) {
+    this.listenerHashTable[event] = undefined;
+  }
+
+  private onParticipantChange(
+    event: ParticipantChangeEvent, 
+    participant: RoomParticipant) {
+    const func = this.listenerHashTable[event]
+    if(func) {
+      func(participant, this.currentRoom.participants)
     }
   }
 

@@ -1,20 +1,29 @@
 
 import styles from './modalNavigation.module.css'
 import React from 'react'
+import { RoomParticipant } from '../../models/User'
 
 
-export default function UserList({ users })  {
+type ListProps = { participants: RoomParticipant[] }
+export default function UserList(props: ListProps)  {
   return <div className={styles.userList}>
     {
-      users.map((user, i) => <UserCell name={user.name} key={i}/>)
+      props.participants.map((user, i) => <UserCell name={user.name} 
+      imgLink={user.profileImage.main}
+      key={i}
+      />)
     }
   </div>
 }
 
-const UserCell = ({ name }) => {
+type CellProps = { 
+  name: string, 
+  imgLink: string,
+}
+const UserCell = (props: CellProps) => {
   return (<div className={styles.userCell}>
-    <div className={styles.userCircleImage}/>
-    <h4 className={styles.userName}>{name}</h4>
+    <img className={styles.userCircleImage} src={props.imgLink}/>
+    <h4 className={styles.userName}>{props.name}</h4>
   </div>)
 
 }

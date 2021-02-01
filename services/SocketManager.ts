@@ -6,7 +6,7 @@ import { GameData, Position, UserState } from '../models/GameStates'
 import Game from '../game/game';
 import { urlWithPath } from './Networking'
 import { RoomParticipant } from '../models/User';
-
+import agoraManager from './AgoraManager';
 const NETWORK_URL = urlWithPath('')
 
 export interface SocketSubscriber {
@@ -118,7 +118,7 @@ export class SocketManager {
     const clientSocketData: ClientSocketData = {
       user: {
         uid: userId,
-        agoraUid: "123",
+        agoraUid: agoraManager.currentAgoraUid,
         currentRoomId: currentRoomId
       },
       data: data
@@ -126,8 +126,11 @@ export class SocketManager {
     this.socketClient.emit(event, clientSocketData);
   }
 
-  joinRoom(roomId: string) {
-    this.emit("joinRoom", null, { roomId: roomId })
+  joinRoom(roomId: string, agoraUid: string) {
+    this.emit("joinRoom", null, {
+       roomId: roomId,
+       agoraUid: agoraUid
+     })
   }
 
   emitMovement(roomId: string, movement: Position) {
