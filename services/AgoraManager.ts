@@ -1,21 +1,24 @@
-import { parseConfigFileTextToJson } from "typescript"
-
-// let AgoraRTC;
+import { getAgoraToken } from './Networking'
 let AgoraRTC = import("agora-rtc-sdk-ng").then(mod => {
-    // AgoraRTC = mod.default
     return mod.default    
 })
+import { IAgoraRTCClient, IMicrophoneAudioTrack } from "agora-rtc-sdk-ng"
+import firebase from 'firebase/app'
 
-const TEMP_TOKEN = "0060214d9fca3c943a5a1dc2e402f7a445eIAA6MNi3dhqwb4BYjHA/FzhDIuZoNiD4dxJhIR/TDCKOjbiT6u4AAAAAEABI+NBcsbYYYAEAAQCwthhg"
-const CHANNEL_NAME = "TEST"
+
 const APP_ID = "0214d9fca3c943a5a1dc2e402f7a445e"
 
 const checkIfAgoraExist = async () => {
   await AgoraRTC
 }
 
+type RTC = {
+  client: IAgoraRTCClient,
+  localAudioTrack: IMicrophoneAudioTrack
+}
+
 class AgoraManager {
-   rtc = {
+   rtc: RTC = {
     // For the local client.
     client: null,
     // For the local audio track.
@@ -48,10 +51,14 @@ class AgoraManager {
     await this.rtc.client.publish([this.rtc.localAudioTrack])
   }
 
-  async joinChannel(): Promise<string> {
+  async joinChannel(roomId: string): Promise<string> {
+    const uid = firebase.auth().currentUser.uid
+    if (!uid) throw new Error("Uid does not exist");
+    
     await checkIfAgoraExist()
     console.log("Joining channel")
-    const agoraUid = await this.rtc.client.join(APP_ID, CHANNEL_NAME, TEMP_TOKEN)
+    const token = await getAgoraToken(roomId)
+    const agoraUid = await this.rtc.client.join(APP_ID, roomId, token, uid)
     this.currentAgoraUid = `${agoraUid}`
     return this.currentAgoraUid;
   }

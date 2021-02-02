@@ -38,6 +38,12 @@ export default function ModalNavigationView() {
     })
   },[])
 
+
+  useEffect(() => {
+    console.log("Participants state did change")
+    console.log(participants)
+  }, [participants])
+
   return  (<div className={styles.modalView}>
       <h3> Benjamin's lobby</h3>
       <p> 8 users online</p>

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import Game from '../game/Game'
+import Game, { game } from '../game/Game'
 import { gameManager } from '../game/GameManager'
 import * as THREE from 'three'
 
@@ -8,7 +8,7 @@ export default function GameCanvas() {
   const mount = useRef(null)
   const [isAnimating, setAnimating] = useState(true)
   const controls = useRef(null)
-  const game = new Game()
+  // const game = new Game()
 
   useEffect(() => {
     gameManager.setCurrentGame(game);
@@ -61,8 +61,6 @@ export default function GameCanvas() {
     
     start()
     addWindowListeners()
-
-    // controls.current = { start, stop }
     
     return () => {
       stop()
@@ -72,20 +70,10 @@ export default function GameCanvas() {
         mount.current.removeChild(renderer.domElement)
       }
       
-
       game.deinitialize()
-      // geometry.dispose()
-      // material.dispose()
     }
   }, [])
 
-  // useEffect(() => {
-  //   if (isAnimating) {
-  //     controls.current.start()
-  //   } else {
-  //     controls.current.stop()
-  //   }
-  // }, [isAnimating])
   
   return <div className="vis" ref={mount} />
 }

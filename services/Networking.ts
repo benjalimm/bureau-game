@@ -1,16 +1,12 @@
-import io from 'socket.io-client';
-import React, { useEffect, useState } from 'react'
-import { setTokenSourceMapRange } from 'typescript';
 import 'firebase/auth'
 import firebase from 'firebase/app'
-import { socketManager, SocketSubscriber } from './SocketManager'
 
-let _IS_LOCAL = false 
+let _IS_LOCAL = true 
 const networkUrl = 'https://desolate-anchorage-45430.herokuapp.com'
 const localUrl = 'http://localhost:8000'
 // const socket = io(networkUrl, {transports: ['websocket']})
 
-export const urlWithPath = (path) => {
+export const urlWithPath = (path: string) => {
   let url = networkUrl
   if (_IS_LOCAL) {
     url = localUrl
@@ -18,7 +14,7 @@ export const urlWithPath = (path) => {
   return url + path
 }
 
-export const makeRequest = async (url, method, body) => {
+export const makeRequest = async (url: string, method: string, body?: any) => {
   const idToken = await firebase.auth().currentUser.getIdToken()
   return fetch(url, {
     method: method,
@@ -26,10 +22,18 @@ export const makeRequest = async (url, method, body) => {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${idToken}`
     },
-    body: JSON.stringify(body)
+    body: (body) ? JSON.stringify(body) : null
   })
 }
 
-export const createUserWithTwitter = (userDetails) => {
+export const createUserWithTwitter = (userDetails: any) => {
   return makeRequest(urlWithPath('/api/user/twitter'), 'POST', { user: userDetails})
+}
+
+export const getAgoraToken = async (roomId: string): Promise<string> => {
+  const result = await makeRequest(urlWithPath(`/api/room/agoraToken/${roomId}`), 'GET')
+  const responseJson = await result.json() 
+  console.log(responseJson)
+  const token = responseJson.token as string;
+  return token;
 }

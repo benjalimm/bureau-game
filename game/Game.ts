@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { CameraHelper, Light } from 'three'
 import { socketManager } from '../services/SocketManager'
 import { UserState, GameData, Position } from '../models/Game'
-import { HashTable } from '../models/Common';
+import { HashTable, NumberHashTable } from '../models/Common';
 import { RoomParticipant } from '../models/User';
 import { Room } from './Room'
 
@@ -19,7 +19,7 @@ export default class Game {
   scene?: THREE.Scene
   currentRoom: Room
 
-  pressedKeys = {}
+  pressedKeys: NumberHashTable<boolean> = {}
 
   userStates: UserState[]
   userMeshesTable: HashTable<THREE.Mesh> = {}
@@ -293,6 +293,8 @@ export default class Game {
     }
   }
 
-
 }
+
+const game = new Game()
+export { game }
 
