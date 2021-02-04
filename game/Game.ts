@@ -241,7 +241,6 @@ export default class Game {
   }
 
 
-
   private createNewSphereMesh(): THREE.Mesh {
     const geometry = new THREE.SphereGeometry(1,20)
     const material = new THREE.MeshPhongMaterial({ color: 0xff00ff , wireframe: false })

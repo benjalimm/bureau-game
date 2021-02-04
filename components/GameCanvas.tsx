@@ -6,7 +6,6 @@ import * as THREE from 'three'
 
 export default function GameCanvas() {
   const mount = useRef(null)
-  const [isAnimating, setAnimating] = useState(true)
   const controls = useRef(null)
   // const game = new Game()
 

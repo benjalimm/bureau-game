@@ -7,6 +7,7 @@ import {
   FirebaseAuthProvider,
 } from "@react-firebase/auth";
 import { firebase, isUserLoggedIn, logout } from '../services/Authentication'
+import Game from '../game/Game'
 import Router from "next/router"
 
 

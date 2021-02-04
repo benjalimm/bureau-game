@@ -1,7 +1,7 @@
 import styles from './modalNavigation.module.css'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { RoomParticipant } from '../../models/User'
-import Game from '../../game/Game'
+import Game, { game } from '../../game/Game'
 import { gameManager } from '../../game/GameManager';
 import UserList from './UserList'
 
@@ -12,22 +12,20 @@ export default function ModalNavigationView() {
 
   useEffect(() => {
     console.log("Game use effect triggered")
+    
     currentGame?.onParticipantChangeEvent("Join", (joiningParticipant, currentParticipants) => {
       console.log("Participant joined")
-      console.log(currentParticipants)
-
-      setParticipants(currentParticipants);
+      setParticipants([...currentParticipants]);
     })
 
     currentGame?.onParticipantChangeEvent("Leave", (leavingParticipant, currentParticipants) => {
       console.log("Participant left")
-      console.log(currentParticipants)
-      setParticipants(currentParticipants);
+      setParticipants([...currentParticipants]);
     })
 
-    currentGame?.onParticipantChangeEvent("Initialized", (_, currentParticipants) => {
+    currentGame?.onParticipantChangeEvent("Initialized", (joiningParticipant, currentParticipants) => {
       console.log("Participants initialized")
-      setParticipants(currentParticipants);
+      setParticipants([...currentParticipants]);
     })
   }, [currentGame])
 

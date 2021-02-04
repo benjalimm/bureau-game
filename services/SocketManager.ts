@@ -3,7 +3,7 @@ import 'firebase/auth'
 import { firebase } from './Authentication'
 import { ClientSocketData } from '../models/SocketData';
 import { GameData, Position, UserState } from '../models/Game'
-import Game from '../game/Game';
+import Game, { game } from '../game/Game';
 import { gameManager } from '../game/GameManager'
 import { urlWithPath } from './Networking'
 import { RoomParticipant } from '../models/User';
@@ -45,6 +45,9 @@ export class SocketManager {
     if (!this.socketClient) {
       await this.init() // Init 
     }
+
+    // Wait for initial game to initialize
+    // await gameManager.gameDidInitialize();
     
     this.socketClient.on('connect' , () => {
       this.subscribers.forEach(s => {
@@ -81,7 +84,7 @@ export class SocketManager {
         const roomId = data.roomId as string;
 
         /// Initialize initial user states
-        gameManager.currentGame?.initializeInitialUserStates(userStates, firebase.auth().currentUser.uid)
+        gameManager.currentGame!.initializeInitialUserStates(userStates, firebase.auth().currentUser.uid)
 
         /// Initialize initial room participants
         gameManager.currentGame?.initializeRoom(roomId, participants)
