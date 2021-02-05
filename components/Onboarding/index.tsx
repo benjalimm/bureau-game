@@ -8,6 +8,7 @@ import Login from './Login'
 import JoinRoom from './JoinRoom'
 import Router from 'next/router'
 import { getAgoraToken } from '../../services/Networking'
+import { gameManager } from '../../game/GameManager'
 
 
 
@@ -35,11 +36,9 @@ export default function LoginPage () {
 
   const didTapJoinRoom = async () => {
     try {
-      await socketManager.connect();
-      const agoraUid = await agoraManager.joinChannel(roomId)
-      socketManager.joinRoom(roomId, `${agoraUid}`)
-      await agoraManager.setupAudio()
       Router.push('/')
+      await gameManager.initializeGame(roomId)
+      
     } catch (error) {
       console.log("Failed to join room due to error:")
       console.log(error)

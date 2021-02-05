@@ -10,13 +10,13 @@ export default function GameCanvas() {
   // const game = new Game()
 
   useEffect(() => {
-    gameManager.setCurrentGame(game);
     let width = mount.current.clientWidth
     let height = mount.current.clientHeight
     let frameId: number;
 
     // Initial setup for Three JS 
     game.initialize(height, width)
+    gameManager.setCurrentGame(game);
     const renderer = game.renderer
     mount.current.appendChild(renderer.domElement)
 

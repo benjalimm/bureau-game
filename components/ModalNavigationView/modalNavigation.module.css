@@ -44,8 +44,8 @@
 }
 
 .userCircleImage {
-  height: 50px;
-  width: 50px;
+  height: 40px;
+  width: 4 0px;
   border-radius: 50%;
   display:inline-block;
   background-color: lightgray;
@@ -54,4 +54,11 @@
 
 .userName {
   margin-left: 20px;
+  font-family: 'Inter';
+  font-weight: 600;
+}
+
+.tabBarContainer {
+  display: flex;
+  justify-content: center;
 }

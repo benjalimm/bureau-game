@@ -1,7 +1,10 @@
 import { HashTable } from '../models/Common'
+import agoraManager from '../services/AgoraManager'
+import { socketManager } from '../services/SocketManager'
 import Game, { game as initialGame } from './Game'
 
 type OnGameChangeFunc = (game: Game) => void
+
 class GameManager {
   private game?: Game 
   private onGameChangeFunc?: OnGameChangeFunc
@@ -49,6 +52,14 @@ class GameManager {
     if (this.onGameChangeFunc) {
       this.onGameChangeFunc(game)
     }
+  }
+
+  async initializeGame(roomId: string) {
+    await this.gameDidInitialize()
+    await socketManager.connect();
+    const agoraUid = await agoraManager.joinChannel(roomId)
+    socketManager.joinRoom(roomId, `${agoraUid}`)
+    await agoraManager.setupAudio()
   }
 }
 

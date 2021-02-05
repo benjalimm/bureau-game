@@ -47,7 +47,7 @@ export class SocketManager {
     }
 
     // Wait for initial game to initialize
-    // await gameManager.gameDidInitialize();
+    await gameManager.gameDidInitialize();
     
     this.socketClient.on('connect' , () => {
       this.subscribers.forEach(s => {
