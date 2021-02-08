@@ -38,7 +38,6 @@ export default function LoginPage () {
     try {
       Router.push('/')
       await gameManager.initializeGame(roomId)
-      
     } catch (error) {
       console.log("Failed to join room due to error:")
       console.log(error)

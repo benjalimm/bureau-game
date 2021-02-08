@@ -3,8 +3,9 @@ import styles from './modalNavigation.module.css'
 import React from 'react'
 import { RoomParticipant } from '../../models/User'
 
-
-type ListProps = { participants: RoomParticipant[] }
+interface ListProps { 
+  participants: RoomParticipant[] 
+}
 export default function UserList(props: ListProps)  {
   return <div className={styles.userList}>
     {
@@ -17,10 +18,11 @@ export default function UserList(props: ListProps)  {
   </div>
 }
 
-type CellProps = { 
+interface CellProps  { 
   name: string, 
   imgLink: string,
 }
+
 const UserCell = (props: CellProps) => {
   return (<div className={styles.userCell}>
     <img className={styles.userCircleImage} src={props.imgLink}/>

@@ -4,6 +4,7 @@ import { RoomParticipant } from '../../models/User'
 import Game, { game } from '../../game/Game'
 import { gameManager } from '../../game/GameManager';
 import UserList from './UserList'
+import TabBar from './TabBar';
 
 export default function ModalNavigationView() {
 
@@ -46,6 +47,7 @@ export default function ModalNavigationView() {
       <h3> Benjamin's lobby</h3>
       <p> 8 users online</p>
       <UserList participants={participants}/>
+      <TabBar/>
     </div>)
 }
 

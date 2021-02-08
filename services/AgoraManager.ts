@@ -1,23 +1,29 @@
 import { getAgoraToken } from './Networking'
+import firebase from 'firebase/app'
+import { HashTable } from '../models/Common'
+import { IAgoraRTCClient, 
+  IMicrophoneAudioTrack, 
+  IRemoteAudioTrack 
+} from "agora-rtc-sdk-ng"
 let AgoraRTC = import("agora-rtc-sdk-ng").then(mod => {
     return mod.default    
 })
-import { IAgoraRTCClient, IMicrophoneAudioTrack } from "agora-rtc-sdk-ng"
-import firebase from 'firebase/app'
-
 
 const APP_ID = "0214d9fca3c943a5a1dc2e402f7a445e"
+
+const IS_TEST = false 
 
 const checkIfAgoraExist = async () => {
   await AgoraRTC
 }
 
-type RTC = {
+interface RTC  {
   client: IAgoraRTCClient,
   localAudioTrack: IMicrophoneAudioTrack
 }
 
 class AgoraManager {
+
    rtc: RTC = {
     // For the local client.
     client: null,
@@ -25,7 +31,10 @@ class AgoraManager {
     localAudioTrack: null,
   };
 
+  remoteUserTracks: HashTable<IRemoteAudioTrack> = {}
+
   currentAgoraUid?: string 
+
 
   constructor() {
     this.initializeAgora().then(() => {
@@ -54,6 +63,9 @@ class AgoraManager {
   async joinChannel(roomId: string): Promise<string> {
     const uid = firebase.auth().currentUser.uid
     if (!uid) throw new Error("Uid does not exist");
+
+    //If test mode, don't join audio channel
+    if (IS_TEST) return uid;
     
     await checkIfAgoraExist()
     console.log("Joining channel")
@@ -65,6 +77,7 @@ class AgoraManager {
 
 
   async setupAudio()  {
+    if (IS_TEST) return;
     await this.publishLocalAudioTrack()
     await this.listenToRemoteUser()
   }
@@ -84,13 +97,24 @@ class AgoraManager {
     
       // If the subscribed track is audio.
       if (mediaType === "audio") {
-        // Get `RemoteAudioTrack` in the `user` object.
+        
         const remoteAudioTrack = user.audioTrack;
-        // Play the audio track. No need to pass any DOM element.
+
+        /// Keep reference to remote user track
+        this.remoteUserTracks[user.uid] = remoteAudioTrack;
         remoteAudioTrack.play();
       }
-    });
 
+      /// Listen 
+      await this.rtc.client.on("user-left", async (user, mediaType) => {
+        this.remoteUserTracks[user.uid] = undefined;
+      })
+    });
+  }
+
+  muteAudio(isMute: boolean) {
+    const volume: number = isMute ? 0 : 100;
+    this.rtc.localAudioTrack.setVolume(volume);
   }
 }
 
