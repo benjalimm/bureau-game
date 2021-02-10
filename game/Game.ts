@@ -33,20 +33,21 @@ export default class Game {
   initialize(height: number, width: number) {
     this.scene = new THREE.Scene()
     this.scene.background = new THREE.Color(0x87ceeb)
-    this.camera = new THREE.PerspectiveCamera(90, width/height, 0.1, 1000)
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
     
 
     this.renderer.setClearColor('#000000')
     this.renderer.setSize(width, height)
     this.setupGround()
-    this.setupCamera()
+    this.setupCamera(width / height)
     this.setupShadows()
     this.setupLights()
   }
 
 
-  private setupCamera() {
+  private setupCamera(aspect: number) {
+    this.camera = new THREE.PerspectiveCamera(90, aspect, 0.1, 1000)
+
     this.camera.position.set(-1, 20, -10);
   }
 

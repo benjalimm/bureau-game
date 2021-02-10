@@ -11,10 +11,12 @@ interface ItemProps  {
 }
 
 
-
 export default function TabBar() {
 
   const [isMicMuted, setMicMuted] = useState<boolean>(false)
+
+
+  
 
   const onMicMuteTap = () => {
     agoraManager.muteAudio(!isMicMuted);
@@ -26,6 +28,8 @@ export default function TabBar() {
     imageLink: isMicMuted ? './images/ModalNavigationView/mic-muted.svg' : './images/ModalNavigationView/mic-on.svg',
     onTap: onMicMuteTap
   }
+
+
 
   return <div className={styles.tabBarContainer}>
     {

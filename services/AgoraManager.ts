@@ -10,18 +10,17 @@ let AgoraRTC = import("agora-rtc-sdk-ng").then(mod => {
 })
 
 const APP_ID = "0214d9fca3c943a5a1dc2e402f7a445e"
-
 const IS_TEST = false 
 
 const checkIfAgoraExist = async () => {
   await AgoraRTC
 }
 
-interface RTC  {
-  client: IAgoraRTCClient,
-  localAudioTrack: IMicrophoneAudioTrack
-}
 
+
+
+
+/* AgoraManager  */
 class AgoraManager {
 
    rtc: RTC = {
@@ -32,8 +31,10 @@ class AgoraManager {
   };
 
   remoteUserTracks: HashTable<IRemoteAudioTrack> = {}
-
+  volumeIndicatorListenerHashTable: HashTable<VolumeIndicatorResultCallBack> = {}
   currentAgoraUid?: string 
+
+  private volumeIntervalId: NodeJS.Timeout | null = null;
 
 
   constructor() {
@@ -80,6 +81,7 @@ class AgoraManager {
     if (IS_TEST) return;
     await this.publishLocalAudioTrack()
     await this.listenToRemoteUser()
+    this.listenToVolumeIndicator()
   }
 
   async leaveChannel () {
@@ -101,22 +103,72 @@ class AgoraManager {
         const remoteAudioTrack = user.audioTrack;
 
         /// Keep reference to remote user track
-        this.remoteUserTracks[user.uid] = remoteAudioTrack;
+        this.remoteUserTracks[user.uid] = remoteAudioTrack;        
         remoteAudioTrack.play();
       }
 
       /// Listen 
       await this.rtc.client.on("user-left", async (user, mediaType) => {
-        this.remoteUserTracks[user.uid] = undefined;
+        delete this.remoteUserTracks[user.uid]
       })
     });
+  }
+
+  private listenToVolumeIndicator() {
+    this.volumeIntervalId = setInterval(() => {
+      var listOfVolumeLevelData: VolumeLevelData[] = []
+
+      // 1. Get remote user volume levels
+      for (var key of Object.keys(this.remoteUserTracks)){
+        const remoteUserTrack = this.remoteUserTracks[key]
+        listOfVolumeLevelData.push({
+          uid: key,
+          level: remoteUserTrack?.getVolumeLevel() ?? 0
+        })
+      }
+
+      //2. Get local user volume levels.
+      if (this.rtc.localAudioTrack && this.currentAgoraUid) {
+        listOfVolumeLevelData.push({
+          uid: this.currentAgoraUid,
+          level: this.rtc.localAudioTrack.getVolumeLevel()
+        })
+      }
+
+      for (var listenerId of Object.keys(this.volumeIndicatorListenerHashTable)) {
+        const callback = this.volumeIndicatorListenerHashTable[listenerId];
+        callback(listOfVolumeLevelData)
+      }
+
+    }, 100)
+  }
+
+  private stopListeningToVolumeIndicator() {
+    clearInterval(this.volumeIntervalId)
   }
 
   muteAudio(isMute: boolean) {
     const volume: number = isMute ? 0 : 100;
     this.rtc.localAudioTrack.setVolume(volume);
   }
+  
+  listenToVolumeIndicatorForCurrentRoom(listenerId: string, indicatorCallback: VolumeIndicatorResultCallBack) {
+    this.volumeIndicatorListenerHashTable[listenerId] = indicatorCallback
+  }
+  
 }
+
+/* AgoraManager types */
+interface RTC  {
+  client: IAgoraRTCClient,
+  localAudioTrack: IMicrophoneAudioTrack
+}
+
+interface VolumeLevelData { 
+  level: number, uid: string
+}
+
+type VolumeIndicatorResultCallBack = (result: VolumeLevelData[]) => void
 
 const agoraManager = new AgoraManager()
 export default agoraManager
