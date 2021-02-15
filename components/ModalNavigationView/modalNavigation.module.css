@@ -40,9 +40,15 @@
 
 .userCell {
   display: flex; 
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   /* border: red 1px solid */
+}
+
+.userProfileNameContainer {
+  display: flex; 
+  justify-content: center;
+  align-items: center;
 }
 
 .userCircleImage {
@@ -87,4 +93,10 @@
 .tabBarIcon {
   height: 30px;
   width: 30px;
+}
+
+.userCellMuteImage {
+  height: 20px;
+  width: 20px;
+  margin-right: 20px;
 }

@@ -16,10 +16,6 @@ const checkIfAgoraExist = async () => {
   await AgoraRTC
 }
 
-
-
-
-
 /* AgoraManager  */
 class AgoraManager {
 
@@ -34,7 +30,9 @@ class AgoraManager {
   volumeIndicatorListenerHashTable: HashTable<VolumeIndicatorResultCallBack> = {}
   currentAgoraUid?: string 
 
+
   private volumeIntervalId: NodeJS.Timeout | null = null;
+  private currentVolume: number = 0
 
 
   constructor() {
@@ -59,6 +57,9 @@ class AgoraManager {
     await this.rtc.client.setClientRole("host")
     this.rtc.localAudioTrack = await agoraRtc.createMicrophoneAudioTrack()
     await this.rtc.client.publish([this.rtc.localAudioTrack])
+
+    /// Initialize volume
+    this.rtc.localAudioTrack.setVolume(this.currentVolume)
   }
 
   async joinChannel(roomId: string): Promise<string> {
@@ -77,10 +78,10 @@ class AgoraManager {
   }
 
 
+
   async setupAudio()  {
     if (IS_TEST) return;
     await this.publishLocalAudioTrack()
-    await this.listenToRemoteUser()
     this.listenToVolumeIndicator()
   }
 
@@ -90,7 +91,7 @@ class AgoraManager {
     return this.rtc.client.leave()
   }
 
-  private async listenToRemoteUser()  {
+   async setupListeners()  {
     await checkIfAgoraExist()
     this.rtc.client.on("user-published", async (user, mediaType) => {
       // Subscribe to a remote user.
@@ -111,8 +112,12 @@ class AgoraManager {
       await this.rtc.client.on("user-left", async (user, mediaType) => {
         delete this.remoteUserTracks[user.uid]
       })
+    
     });
+
   }
+
+
 
   private listenToVolumeIndicator() {
     this.volumeIntervalId = setInterval(() => {
@@ -149,9 +154,10 @@ class AgoraManager {
 
   muteAudio(isMute: boolean) {
     const volume: number = isMute ? 0 : 100;
-    this.rtc.localAudioTrack.setVolume(volume);
+    this.currentVolume = volume
+    this.rtc.localAudioTrack?.setVolume(volume);
   }
-  
+
   listenToVolumeIndicatorForCurrentRoom(listenerId: string, indicatorCallback: VolumeIndicatorResultCallBack) {
     this.volumeIndicatorListenerHashTable[listenerId] = indicatorCallback
   }

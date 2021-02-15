@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { CameraHelper, Light } from 'three'
 import { socketManager } from '../services/SocketManager'
-import { UserState, GameData, Position } from '../models/Game'
+import { UserState, GameData, Position, OutgoingParticipantStateChangeData } from '../models/Game'
 import { HashTable, NumberHashTable } from '../models/Common';
 import { RoomParticipant } from '../models/User';
 import { Room } from './Room'
@@ -17,7 +17,7 @@ export default class Game {
   renderer?: THREE.WebGLRenderer
   camera?: THREE.PerspectiveCamera
   scene?: THREE.Scene
-  currentRoom: Room
+  currentRoom?: Room
 
   pressedKeys: NumberHashTable<boolean> = {}
 
@@ -291,6 +291,16 @@ export default class Game {
     if(func) {
       func(changingParticipant, currentParticipants)
     }
+  }
+
+  setMicToMute(state: boolean) {
+
+    const participantStateChangeData: OutgoingParticipantStateChangeData = {
+      type: "MIC_MUTE_STATUS",
+      data: { isMuted: state }
+    }
+
+    socketManager.emit("ParticipantStateChange", this.currentRoom?.roomId, participantStateChangeData)
   }
 
 }

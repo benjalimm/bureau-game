@@ -2,6 +2,8 @@ import styles from './modalNavigation.module.css'
 import React, { useEffect, useState, useRef } from 'react'
 import Image from 'next/image'
 import agoraManager from '../../services/AgoraManager';
+import { socketManager } from '../../services/SocketManager';
+import { gameManager } from '../../game/GameManager';
 
 
 interface ItemProps  {
@@ -13,14 +15,18 @@ interface ItemProps  {
 
 export default function TabBar() {
 
-  const [isMicMuted, setMicMuted] = useState<boolean>(false)
+  const [isMicMuted, setMicMuted] = useState<boolean>(true)
 
 
+  useEffect(() => {
+    agoraManager.muteAudio(isMicMuted)
+  }, [])
   
 
   const onMicMuteTap = () => {
     agoraManager.muteAudio(!isMicMuted);
     setMicMuted(!isMicMuted);
+    gameManager.currentGame?.setMicToMute(isMicMuted)
   }
 
   const muteMicItemProps: ItemProps = {
@@ -29,13 +35,8 @@ export default function TabBar() {
     onTap: onMicMuteTap
   }
 
-
-
   return <div className={styles.tabBarContainer}>
-    {
-      <TabBarItem {...muteMicItemProps}/>
-      
-    }
+    <TabBarItem {...muteMicItemProps}/>
   </div>
 }
 

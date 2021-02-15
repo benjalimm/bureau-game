@@ -57,6 +57,7 @@ class GameManager {
   async initializeGame(roomId: string) {
     await this.gameDidInitialize()
     await socketManager.connect();
+    await agoraManager.setupListeners() /// Setup listeners before joining channel
     const agoraUid = await agoraManager.joinChannel(roomId)
     socketManager.joinRoom(roomId, `${agoraUid}`)
     await agoraManager.setupAudio()

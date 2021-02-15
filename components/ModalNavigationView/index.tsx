@@ -15,9 +15,6 @@ export default function ModalNavigationView() {
   useState<ParticipantState[]>([])
   const [roomParticipants, setRoomParticipants] = 
   useState<RoomParticipant[]>([])
-  const [initializedVolumeListener, setInitializedVolumeListener] = 
-  useState(false)
-
 
   const [currentGame, setCurrentGame] = useState<Game>(null)
   
@@ -67,7 +64,7 @@ export default function ModalNavigationView() {
           states.push({
             participant: participant,
             isTalking: agoraUser.level >= 0.05,
-            isMuted: false
+            isMuted: true
           })
         }
       })
@@ -96,7 +93,10 @@ export default function ModalNavigationView() {
 
   return  (<div className={styles.modalView}>
       <h3> Benjamin's lobby</h3>
-      <p> 8 users online</p>
+      <p>{ participantStates.length === 1 ? 
+      `1 user online` : 
+      `${participantStates.length} users online`
+      }</p>
       <UserList participantStates={participantStates}/>
       <TabBar/>
     </div>)
