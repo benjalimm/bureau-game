@@ -6,21 +6,21 @@ import { ParticipantState } from '../../models/User'
 interface ListProps { 
   participantStates: ParticipantState[] 
 }
-export default function UserList(props: ListProps)  {
+export default function UserList(props: ListProps) {
   return <div className={styles.userList}>
     {
       props.participantStates.map((state, i) => 
-      <UserCell name={state.participant.name} 
-      imgLink={state.participant.profileImage.main}
-      key={state.participant.uid}
-      isTalking={state.isTalking}
-      isMuted={state.participant.isMuted}
-      />)
+        <UserCell name={state.participant.name} 
+          imgLink={state.participant.profileImage.main}
+          key={state.participant.uid}
+          isTalking={state.isTalking}
+          isMuted={state.participant.isMuted}
+        />)
     }
   </div>
 }
 
-interface CellProps  { 
+interface CellProps { 
   name: string, 
   imgLink: string,
   isTalking: boolean
@@ -38,10 +38,10 @@ const UserCell = (props: CellProps) => {
         }/>
         <h4 className={styles.userName}>{props.name}</h4>
       </div>
-        { props.isMuted ? 
-          <img src='./images/ModalNavigationView/mic-muted.svg' className={styles.userCellMuteImage}/> :
-          null
-        }
+      { props.isMuted ? 
+        <img src='./images/ModalNavigationView/mic-muted.svg' className={styles.userCellMuteImage}/> :
+        null
+      }
     </div>
   )
 

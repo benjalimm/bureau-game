@@ -14,13 +14,18 @@ export const urlWithPath = (path: string) => {
   return url + path;
 };
 
-export const makeRequest = async (url: string, method: string, body?: any): Promise<Response> => {
+export const makeRequest = async (
+  url: string,
+  method: string,
+  body?: any
+): Promise<Response> => {
+
   const idToken = await firebase.auth().currentUser.getIdToken();
   return fetch(url, {
-    method: method,
+    method:  method,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${idToken}`
+      Authorization:  `Bearer ${idToken}`
     },
     body: body ? JSON.stringify(body) : null
   });
@@ -37,8 +42,10 @@ export const getAgoraToken = async (roomId: string): Promise<string> => {
     urlWithPath(`/api/room/agoraToken/${roomId}`),
     'GET'
   );
+
   const responseJson = await result.json();
   console.log(responseJson);
   const token = responseJson.token as string;
   return token;
 };
+

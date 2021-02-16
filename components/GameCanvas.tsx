@@ -3,14 +3,13 @@ import Game, { game } from '../game/Game'
 import { gameManager } from '../game/GameManager'
 import * as THREE from 'three'
 
-
 export default function GameCanvas() {
   const mount = useRef(null)
   // const game = new Game()
 
   useEffect(() => {
-    let width = mount.current.clientWidth
-    let height = mount.current.clientHeight
+    const width = mount.current.clientWidth
+    const height = mount.current.clientHeight
     let frameId: number;
 
     // Initial setup for Three JS 
@@ -46,7 +45,6 @@ export default function GameCanvas() {
     function keyUp(event){
       game.keyDidInteract(event.keyCode, false)
     }
-    
 
     const addWindowListeners = () => {
       window.addEventListener('resize', handleResize)
@@ -55,7 +53,6 @@ export default function GameCanvas() {
       window.addEventListener('keydown', keyDown);
       window.addEventListener('keyup', keyUp);
     }
-
     
     start()
     addWindowListeners()
@@ -71,7 +68,6 @@ export default function GameCanvas() {
       game.deinitialize()
     }
   }, [])
-
   
   return <div className="vis" ref={mount} />
 }

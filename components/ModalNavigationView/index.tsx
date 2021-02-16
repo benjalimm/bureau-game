@@ -7,8 +7,6 @@ import UserList from './UserList'
 import TabBar from './TabBar';
 import agoraManager from '../../services/AgoraManager';
 
-
-
 export default function ModalNavigationView() {
 
   const [participantStates, setParticipantStates] = 
@@ -52,12 +50,10 @@ export default function ModalNavigationView() {
     })
   }, [currentGame])
 
-  
-
   useEffect(() => {
 
     agoraManager.listenToVolumeIndicatorForCurrentRoom("modalNavigation",(result) => {
-      let states: ParticipantState[] = []
+      const states: ParticipantState[] = []
   
       result.forEach(agoraUser => {        
         const participant = roomParticipants.find(par => {
@@ -67,7 +63,7 @@ export default function ModalNavigationView() {
         if (participant) {
           states.push({
             participant: participant,
-            isTalking: agoraUser.level >= 0.05
+            isTalking:   agoraUser.level >= 0.05
           })
         }
       })
@@ -78,13 +74,13 @@ export default function ModalNavigationView() {
 
   useEffect(() => {
 
-    let states: ParticipantState[] = []
+    const states: ParticipantState[] = []
 
     if (roomParticipants.length > 0) {
       roomParticipants.forEach(par => {
         states.push({
           participant: par,
-          isTalking: false,
+          isTalking:   false,
         })
       })
       setParticipantStates([...states])
@@ -93,13 +89,14 @@ export default function ModalNavigationView() {
     
   }, [roomParticipants])
 
-  return  (<div className={styles.modalView}>
-      <h3> Benjamin's lobby</h3>
-      <p>{ participantStates.length === 1 ? 
+  return (<div className={styles.modalView}>
+    <h3> Benjamin's lobby</h3>
+    <p>{ participantStates.length === 1 ? 
       `1 user online` : 
       `${participantStates.length} users online`
-      }</p>
-      <UserList participantStates={participantStates}/>
-      <TabBar/>
-    </div>)
+    }</p>
+    <UserList participantStates={participantStates}/>
+    <TabBar/>
+  </div>)
 }
+

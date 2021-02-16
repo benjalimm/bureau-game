@@ -30,7 +30,7 @@ export default class Game {
   listenerHashTable: HashTable<ParticipantChangeFunction> = {};
 
   player = { height: 1.8, speed: 0.2, turnSpeed: Math.PI * 0.02 };
-
+  
   initialize(height: number, width: number) {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x87ceeb);
@@ -53,7 +53,7 @@ export default class Game {
   private setupGround() {
     const geo = new THREE.PlaneGeometry(100, 100, 10, 10);
     const mat = new THREE.MeshPhongMaterial({
-      color: 0x58d10d,
+      color:     0x58d10d,
       wireframe: false
     });
     const plane = new THREE.Mesh(geo, mat);
@@ -244,7 +244,7 @@ export default class Game {
   participantDidJoinRoom(participant: RoomParticipant) {
     this.currentRoom.addParticipant(participant);
     this.onParticipantChange({
-      event: 'Join',
+      event:               'Join',
       changingParticipant: participant,
       currentParticipants: this.currentRoom.participants
     });
@@ -255,7 +255,7 @@ export default class Game {
   participantDidLeaveRoom(participant: RoomParticipant) {
     this.currentRoom.removeParticipant(participant.uid);
     this.onParticipantChange({
-      event: 'Leave',
+      event:               'Leave',
       changingParticipant: participant,
       currentParticipants: this.currentRoom.participants
     });
@@ -265,7 +265,7 @@ export default class Game {
   private createNewSphereMesh(): THREE.Mesh {
     const geometry = new THREE.SphereGeometry(1, 20);
     const material = new THREE.MeshPhongMaterial({
-      color: 0xff00ff,
+      color:     0xff00ff,
       wireframe: false
     });
     const mesh = new THREE.Mesh(geometry, material);
@@ -288,7 +288,7 @@ export default class Game {
     this.currentRoom = new Room(roomId);
     this.currentRoom.participants = participants;
     this.onParticipantChange({
-      event: 'Initialized',
+      event:               'Initialized',
       changingParticipant: null,
       currentParticipants: participants
     });
@@ -347,7 +347,7 @@ export default class Game {
     } = this.currentRoom?.participantMuteStateDidChange(props);
 
     this.onParticipantChange({
-      event: 'StateChange',
+      event:               'StateChange',
       changingParticipant: changingParticipant,
       currentParticipants: currentParticipants
     });
