@@ -25,7 +25,6 @@ export default function TabBar() {
   const onMicMuteTap = () => {
     agoraManager.muteAudio(!isMicMuted);
     gameManager.currentGame?.setMicToMute({state: !isMicMuted})
-
     setMicMuted(!isMicMuted);
   }
 

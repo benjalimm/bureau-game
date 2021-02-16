@@ -3,17 +3,17 @@ export interface User {
   name: string;
   email: string;
   profileImage?: {
-    main: string
-  },
-  authType: "TWITTER"
+    main: string;
+  };
+  authType: 'TWITTER';
 }
 
 export interface RoomParticipant {
   uid: string;
   name: string;
   profileImage?: {
-    main: string
-  }
+    main: string;
+  };
   agoraUid: string;
   isMuted: boolean;
 }
@@ -23,13 +23,12 @@ export interface ParticipantState {
   isTalking: boolean;
 }
 
-
 export function isUser(obj: any): obj is User {
   if (obj === undefined) return false;
-  const userObj = (obj as User)
+  const userObj = obj as User;
   return (
     userObj.uid !== undefined &&
-    userObj.name !== undefined && 
-    userObj.email != undefined 
+    userObj.name !== undefined &&
+    userObj.email != undefined
   );
 }
