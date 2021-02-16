@@ -22,4 +22,23 @@ export class Room {
       this.participants.splice(index, 1)
     }
   }
+
+  participantMuteStateDidChange(props: { uid: string, isMuted: boolean }): {
+    changingParticipant: RoomParticipant,
+    currentParticipants: RoomParticipant[]
+  } | null {
+
+    const participantIndex = this.participants.findIndex(p => p.uid === props.uid)
+
+    if (participantIndex != -1) {
+      this.participants[participantIndex].isMuted = props.isMuted
+
+      return {
+        changingParticipant: this.participants[participantIndex],
+        currentParticipants: this.participants
+      }
+    }
+
+    return null
+  }
 }

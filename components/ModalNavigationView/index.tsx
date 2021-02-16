@@ -43,8 +43,12 @@ export default function ModalNavigationView() {
     currentGame?.onParticipantChangeEvent("Initialized", (joiningParticipant, currentParticipants) => {
       console.log("Participants initialized")
       console.log(currentParticipants)
-
       setRoomParticipants([...currentParticipants]);
+    })
+
+    currentGame?.onParticipantChangeEvent("StateChange", (changingParticipant, currentParticipants) => {
+      console.log(`${changingParticipant.uid} changed participant state`)
+      setRoomParticipants([...currentParticipants])
     })
   }, [currentGame])
 
@@ -63,8 +67,7 @@ export default function ModalNavigationView() {
         if (participant) {
           states.push({
             participant: participant,
-            isTalking: agoraUser.level >= 0.05,
-            isMuted: true
+            isTalking: agoraUser.level >= 0.05
           })
         }
       })
@@ -82,7 +85,6 @@ export default function ModalNavigationView() {
         states.push({
           participant: par,
           isTalking: false,
-          isMuted: true 
         })
       })
       setParticipantStates([...states])

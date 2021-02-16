@@ -17,7 +17,6 @@ export default function TabBar() {
 
   const [isMicMuted, setMicMuted] = useState<boolean>(true)
 
-
   useEffect(() => {
     agoraManager.muteAudio(isMicMuted)
   }, [])
@@ -25,8 +24,9 @@ export default function TabBar() {
 
   const onMicMuteTap = () => {
     agoraManager.muteAudio(!isMicMuted);
+    gameManager.currentGame?.setMicToMute({state: !isMicMuted})
+
     setMicMuted(!isMicMuted);
-    gameManager.currentGame?.setMicToMute(isMicMuted)
   }
 
   const muteMicItemProps: ItemProps = {

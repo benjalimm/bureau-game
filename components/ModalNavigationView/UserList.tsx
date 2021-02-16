@@ -1,7 +1,7 @@
 
 import styles from './modalNavigation.module.css'
 import React from 'react'
-import { RoomParticipant, ParticipantState } from '../../models/User'
+import { ParticipantState } from '../../models/User'
 
 interface ListProps { 
   participantStates: ParticipantState[] 
@@ -14,7 +14,7 @@ export default function UserList(props: ListProps)  {
       imgLink={state.participant.profileImage.main}
       key={state.participant.uid}
       isTalking={state.isTalking}
-      isMuted={state.isMuted}
+      isMuted={state.participant.isMuted}
       />)
     }
   </div>

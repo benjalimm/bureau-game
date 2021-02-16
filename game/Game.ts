@@ -7,7 +7,7 @@ import { RoomParticipant } from '../models/User';
 import { Room } from './Room'
 
 
-type ParticipantChangeEvent = "Join" | "Leave" | "Initialized"
+type ParticipantChangeEvent = "Join" | "Leave" | "Initialized" | "StateChange"
 type ParticipantChangeFunction = (
   participant: RoomParticipant | null, 
   currentParticipants: RoomParticipant[]) 
@@ -231,13 +231,22 @@ export default class Game {
 
   participantDidJoinRoom(participant: RoomParticipant) {
     this.currentRoom.addParticipant(participant)
-    this.onParticipantChange("Join", participant, this.currentRoom.participants)
+    this.onParticipantChange({ 
+      event: "Join", 
+      changingParticipant: participant, 
+      currentParticipants: this.currentRoom.participants
+    })
+
     this.addUserMesh(participant.uid, { x: 1, y: 1, z: 1})
   }
 
   participantDidLeaveRoom(participant: RoomParticipant) {
     this.currentRoom.removeParticipant(participant.uid)
-    this.onParticipantChange("Leave", participant, this.currentRoom.participants)
+    this.onParticipantChange({ 
+      event: "Leave", 
+      changingParticipant: participant, 
+      currentParticipants: this.currentRoom.participants
+    })
     this.removeUserMesh(participant.uid);
   }
 
@@ -264,7 +273,11 @@ export default class Game {
   initializeRoom(roomId: string, participants: RoomParticipant[]) {
     this.currentRoom = new Room(roomId);
     this.currentRoom.participants = participants
-    this.onParticipantChange("Initialized", null, participants)
+    this.onParticipantChange({
+      event: "Initialized", 
+      changingParticipant: null,
+      currentParticipants: participants
+    })
   }
 
   attachCameraToUser(uid: string) {
@@ -283,24 +296,40 @@ export default class Game {
     this.listenerHashTable[event] = undefined;
   }
 
-  private onParticipantChange(
+  private onParticipantChange(props: {
     event: ParticipantChangeEvent, 
     changingParticipant: RoomParticipant | null, 
-    currentParticipants: RoomParticipant[]) {
-    const func = this.listenerHashTable[event]
+    currentParticipants: RoomParticipant[]
+  }) {
+    const func = this.listenerHashTable[props.event]
     if(func) {
-      func(changingParticipant, currentParticipants)
+      func(props.changingParticipant, props.currentParticipants)
     }
   }
 
-  setMicToMute(state: boolean) {
-
+  setMicToMute(props: { state: boolean }) {
+    
     const participantStateChangeData: OutgoingParticipantStateChangeData = {
       type: "MIC_MUTE_STATUS",
-      data: { isMuted: state }
+      data: { isMuted: props.state },
     }
 
-    socketManager.emit("ParticipantStateChange", this.currentRoom?.roomId, participantStateChangeData)
+    const roomId = this.currentRoom?.roomId 
+    if (roomId) {
+      socketManager.emit("participantStateChange", roomId, participantStateChangeData)
+    }
+  }
+
+  participantMuteStateDidChange(props: { uid: string, isMuted: boolean}) {
+    const { changingParticipant, currentParticipants} = 
+    this.currentRoom?.participantMuteStateDidChange(props)
+
+    this.onParticipantChange({
+      event: "StateChange",
+      changingParticipant: changingParticipant,
+      currentParticipants: currentParticipants
+    })
+
   }
 
 }

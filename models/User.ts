@@ -15,12 +15,12 @@ export interface RoomParticipant {
     main: string
   }
   agoraUid: string;
+  isMuted: boolean;
 }
 
 export interface ParticipantState {
   participant: RoomParticipant;
   isTalking: boolean;
-  isMuted: boolean;
 }
 
 

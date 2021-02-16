@@ -2,7 +2,7 @@ import { io, Socket } from 'socket.io-client';
 import 'firebase/auth'
 import { firebase } from './Authentication'
 import { ClientSocketData } from '../models/SocketData';
-import { GameData, Position, UserState } from '../models/Game'
+import { GameData, Position, UserState, IncomingParticipantStateChangeData } from '../models/Game'
 import Game, { game } from '../game/Game';
 import { gameManager } from '../game/GameManager'
 import { urlWithPath } from './Networking'
@@ -105,6 +105,14 @@ export class SocketManager {
       this.socketClient.on('bureauGameError', (data) => {
         console.log(data)
       })
+
+      this.socketClient.on("participantStateChange", (data) => {
+        const stateChangeData = data as IncomingParticipantStateChangeData
+        gameManager.currentGame?.participantMuteStateDidChange({
+          uid: stateChangeData.uid, 
+          isMuted: stateChangeData.data.isMuted
+        })
+      })
     })
 
 
@@ -126,6 +134,7 @@ export class SocketManager {
       },
       data: data
     }
+    console.log(data);
     this.socketClient.emit(event, clientSocketData);
   }
 

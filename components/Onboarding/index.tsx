@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import style from './onboarding.module.css'
-import { firebase, loginWithTwitter, isUserLoggedIn } from '../../services/Authentication'
+import { loginWithTwitter, isUserLoggedIn } from '../../services/Authentication'
 import "firebase/auth"
-import { socketManager } from '../../services/SocketManager'
-import agoraManager from '../../services/AgoraManager'
 import Login from './Login'
 import JoinRoom from './JoinRoom'
 import Router from 'next/router'
-import { getAgoraToken } from '../../services/Networking'
 import { gameManager } from '../../game/GameManager'
 
 
