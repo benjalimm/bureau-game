@@ -5,13 +5,11 @@ import agoraManager from '../../services/AgoraManager';
 import { socketManager } from '../../services/SocketManager';
 import { gameManager } from '../../game/GameManager';
 
-
-interface ItemProps  {
+interface ItemProps {
   title: string;
   imageLink: string;
   onTap: () => void
 }
-
 
 export default function TabBar() {
 
@@ -20,26 +18,23 @@ export default function TabBar() {
   useEffect(() => {
     agoraManager.muteAudio(isMicMuted)
   }, [])
-  
 
   const onMicMuteTap = () => {
     agoraManager.muteAudio(!isMicMuted);
     gameManager.currentGame?.setMicToMute({state: !isMicMuted})
-
     setMicMuted(!isMicMuted);
   }
 
   const muteMicItemProps: ItemProps = {
-    title: isMicMuted ? "Mic is muted" : "Mic is on",
+    title:     isMicMuted ? "Mic is muted" : "Mic is on",
     imageLink: isMicMuted ? './images/ModalNavigationView/mic-muted.svg' : './images/ModalNavigationView/mic-on.svg',
-    onTap: onMicMuteTap
+    onTap:     onMicMuteTap
   }
 
   return <div className={styles.tabBarContainer}>
     <TabBarItem {...muteMicItemProps}/>
   </div>
 }
-
 
 const TabBarItem = (props: ItemProps) => {
   return <div className={styles.tabBarItem} onClick={props.onTap}>

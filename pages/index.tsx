@@ -10,11 +10,8 @@ import { firebase, isUserLoggedIn, logout } from '../services/Authentication'
 import Game from '../game/Game'
 import Router from "next/router"
 
-
 export default function Home() {
   const [isLoggedIn, setLoginState] = useState(null)
-
-  
 
   useEffect(() => {
     setLoginState(isUserLoggedIn())
@@ -29,16 +26,16 @@ export default function Home() {
   }, [isLoggedIn])
 
   console.log(`isLoggedIn: ${isLoggedIn}`)
+  
   return (
     <FirebaseAuthProvider firebase={firebase} {...firebaseConfig} databaseURL=""> 
-        {isLoggedIn ? <GameView/> : () => {
-            setLoginState(false);
-            return <div>Loading</div>
-        }}
+      {isLoggedIn ? <GameView/> : () => {
+        setLoginState(false);
+        return <div>Loading</div>
+      }}
     </FirebaseAuthProvider>
   )
 }
-
 
 const GameView = () => {
   return (

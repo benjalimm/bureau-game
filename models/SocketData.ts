@@ -1,13 +1,12 @@
 /// Incoming
 
-
-export interface ClientSocketData { 
-	user: SocketUserDetails;
-	data: any
+export interface ClientSocketData {
+  user: SocketUserDetails;
+  data: any;
 }
 
-export interface ServerSocketData { 
-	data: any
+export interface ServerSocketData {
+  data: any;
 }
 
 export interface SocketUserDetails {
