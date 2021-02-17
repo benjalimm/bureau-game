@@ -21,7 +21,7 @@ export interface RoomParticipant {
 export interface ParticipantState {
   participant: RoomParticipant;
   isTalking: boolean;
-}
+``}
 
 export function isUser(obj: any): obj is User {
   if (obj === undefined) return false;

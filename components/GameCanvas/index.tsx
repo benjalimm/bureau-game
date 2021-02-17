@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react'
-import Game, { game } from '../game/Game'
-import { gameManager } from '../game/GameManager'
-import * as THREE from 'three'
+import React, { useEffect, useRef,  } from 'react'
+import  { game } from '../../game/Game'
+import { gameManager } from '../../game/GameManager'
+import styles from './styles.module.scss'
 
 export default function GameCanvas() {
   const mount = useRef(null)
@@ -69,5 +69,5 @@ export default function GameCanvas() {
     }
   }, [])
   
-  return <div className="vis" ref={mount} />
+  return <div className={styles.vis} ref={mount} />
 }

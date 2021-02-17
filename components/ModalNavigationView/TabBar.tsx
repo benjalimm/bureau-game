@@ -1,4 +1,4 @@
-import styles from './modalNavigation.module.css'
+import styles from './styles.module.scss'
 import React, { useEffect, useState, useRef } from 'react'
 import Image from 'next/image'
 import agoraManager from '../../services/AgoraManager';

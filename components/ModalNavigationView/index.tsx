@@ -1,4 +1,4 @@
-import styles from './modalNavigation.module.css'
+import styles from './styles.module.scss'
 import React, { useEffect, useState, useRef } from 'react'
 import { RoomParticipant, ParticipantState } from '../../models/User'
 import Game, { game } from '../../game/Game'
@@ -80,7 +80,7 @@ export default function ModalNavigationView() {
       roomParticipants.forEach(par => {
         states.push({
           participant: par,
-          isTalking:   false,
+          isTalking:  false,
         })
       })
       setParticipantStates([...states])
