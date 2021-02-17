@@ -27,9 +27,5 @@ export const logout = async () => {
   await firebase.auth().signOut();
 };
 
-export const foo = () => {
-  return ""
-}
-
 initializeFirebase();
 export { firebase };

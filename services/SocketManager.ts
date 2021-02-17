@@ -14,17 +14,11 @@ import { RoomParticipant } from '../models/User';
 import agoraManager from './AgoraManager';
 const NETWORK_URL = urlWithPath('');
 
-export interface SocketSubscriber {
-  onConnect(): void;
-  onDisconnect(): void;
-}
 export class SocketManager {
   socketClient?: Socket;
   currentIdToken: string;
-  subscribers: SocketSubscriber[];
   
   constructor() {
-    this.subscribers = [];
   }
 
   async init() {
@@ -51,15 +45,10 @@ export class SocketManager {
     // Wait for initial game to initialize
     await gameManager.gameDidInitialize();
     this.socketClient.on('connect', () => {
-      this.subscribers.forEach((s) => {
-        s.onConnect();
-      });
 
       /// Listen to disconnect
       this.socketClient.on('disconnect', () => {
-        this.subscribers.forEach((s) => {
-          s.onDisconnect();
-        });
+       
       });
 
       this.socketClient.on('movement', (data) => {
@@ -122,10 +111,6 @@ export class SocketManager {
         });
       });
     });
-  }
-  
-  addSubscriber(subscriber: SocketSubscriber) {
-    this.subscribers.push(subscriber);
   }
 
   emit(event: string, currentRoomId: string | null, data: any) {

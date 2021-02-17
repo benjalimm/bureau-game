@@ -1,16 +1,16 @@
 import * as THREE from 'three';
-import { socketManager } from '../services/SocketManager';
+import { socketManager } from '../../services/SocketManager';
 import {
   UserState,
   GameData,
   Position,
   OutgoingParticipantStateChangeData
-} from '../models/Game';
-import { HashTable, NumberHashTable } from '../models/Common';
-import { RoomParticipant } from '../models/User';
-import { Room } from './Room';
+} from '../../models/Game';
+import { HashTable, NumberHashTable } from '../../models/Common';
+import { RoomParticipant } from '../../models/User';
+import { Room } from '../Room';
 
-type ParticipantChangeEvent = 'Join' | 'Leave' | 'Initialized' | 'StateChange';
+export type ParticipantChangeEvent = 'Join' | 'Leave' | 'Initialized' | 'StateChange';
 type ParticipantChangeFunction = (
   participant: RoomParticipant | null,
   currentParticipants: RoomParticipant[]
@@ -288,7 +288,7 @@ export default class Game {
     this.currentRoom = new Room(roomId);
     this.currentRoom.participants = participants;
     this.onParticipantChange({
-      event:               'Initialized',
+      event: 'Initialized',
       changingParticipant: null,
       currentParticipants: participants
     });
@@ -313,7 +313,7 @@ export default class Game {
     this.listenerHashTable[event] = undefined;
   }
 
-  private onParticipantChange(props: {
+  onParticipantChange(props: {
     event: ParticipantChangeEvent;
     changingParticipant: RoomParticipant | null;
     currentParticipants: RoomParticipant[];
@@ -347,7 +347,7 @@ export default class Game {
     } = this.currentRoom?.participantMuteStateDidChange(props);
 
     this.onParticipantChange({
-      event:               'StateChange',
+      event: 'StateChange',
       changingParticipant: changingParticipant,
       currentParticipants: currentParticipants
     });
