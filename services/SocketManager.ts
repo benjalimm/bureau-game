@@ -8,12 +8,12 @@ import {
   UserState,
   IncomingParticipantStateChangeData
 } from '../models/Game';
-import Game, { game } from '../game/Game';
 import { gameManager } from '../game/GameManager';
 import { urlWithPath } from './Networking';
 import { RoomParticipant } from '../models/User';
 import agoraManager from './AgoraManager';
 const NETWORK_URL = urlWithPath('');
+
 export interface SocketSubscriber {
   onConnect(): void;
   onDisconnect(): void;
@@ -54,12 +54,14 @@ export class SocketManager {
       this.subscribers.forEach((s) => {
         s.onConnect();
       });
+
       /// Listen to disconnect
       this.socketClient.on('disconnect', () => {
         this.subscribers.forEach((s) => {
           s.onDisconnect();
         });
       });
+
       this.socketClient.on('movement', (data) => {
         console.log(`Received Socket data: ${data}`);
         console.log(data);
@@ -69,18 +71,23 @@ export class SocketManager {
           firebase.auth().currentUser.uid
         );
       });
+
       this.socketClient.on('connect_error', function (err) {
         console.log('client connect_error: ', err);
       });
+
       this.socketClient.on('connect_timeout', function (err) {
         console.log('client connect_timeout: ', err);
       });
+
       this.socketClient.on('didInitialize', (data) => {
         console.log('didInitialize');
         console.log(data);
+
         const userStates = data.userStates as UserState[];
         const participants = data.participants as RoomParticipant[];
         const roomId = data.roomId as string;
+
         /// Initialize initial user states
         gameManager.currentGame!.initializeInitialUserStates(
           userStates,
@@ -89,19 +96,23 @@ export class SocketManager {
         /// Initialize initial room participants
         gameManager.currentGame?.initializeRoom(roomId, participants);
       });
+
       this.socketClient.on('didJoin', (data) => {
         const participant = data.participant as RoomParticipant;
         console.log(`${participant.name} just joined`);
         /// Initialize initial room participants
         gameManager.currentGame?.participantDidJoinRoom(participant);
       });
+
       this.socketClient.on('didLeave', (data) => {
         const participant = data.participant as RoomParticipant;
         gameManager.currentGame?.participantDidLeaveRoom(participant);
       });
+
       this.socketClient.on('bureauGameError', (data) => {
         console.log(data);
       });
+
       this.socketClient.on('participantStateChange', (data) => {
         console.log('participantStateChange');
         const stateChangeData = data as IncomingParticipantStateChangeData;
@@ -112,6 +123,7 @@ export class SocketManager {
       });
     });
   }
+  
   addSubscriber(subscriber: SocketSubscriber) {
     this.subscribers.push(subscriber);
   }
@@ -129,7 +141,6 @@ export class SocketManager {
     console.log(data);
     this.socketClient.emit(event, clientSocketData);
   }
-
   
   joinRoom(roomId: string, agoraUid: string) {
     this.emit('joinRoom', null, {

@@ -1,7 +1,7 @@
 import React from 'react'
 
-import styles from './ModalNavigationView/modalNavigation.module.css'
-import ModalNavigationView from './ModalNavigationView'
+import styles from './styles.module.scss'
+import ModalNavigationView from '../ModalNavigationView'
 
 export default function GameOverlay () {
   return <div className={styles.overlayContainerView}>

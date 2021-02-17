@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import style from './onboarding.module.css'
+import styles from './styles.module.scss'
 import { loginWithTwitter, isUserLoggedIn } from '../../services/Authentication'
 import "firebase/auth"
 import Login from './Login'
@@ -7,46 +7,44 @@ import JoinRoom from './JoinRoom'
 import Router from 'next/router'
 import { gameManager } from '../../game/GameManager'
 
-
-
 type OnboardingState = "Login" | "JoinRoom"
 export default function LoginPage () {
 
-    const [isLoggedIn, setLoginState] = useState(false)
-    const [onboardingState, setOnboardingState] =
+  const [isLoggedIn, setLoginState] = useState(false)
+  const [onboardingState, setOnboardingState] =
    useState<OnboardingState>("Login")
-    const [roomId, setRoomId] = useState<string | null>("ABC")
+  const [roomId, setRoomId] = useState<string | null>("ABC")
 
-    const didTapLoginWithTwitter = async () => {
+  const didTapLoginWithTwitter = async () => {
 
-        try {
+    try {
  
-            const dbUserResult = await loginWithTwitter()
-            console.log(await dbUserResult.json())
-            setLoginState(true)
-            setOnboardingState("JoinRoom")
-        } catch (error) {
-            console.log("Error with authenticating Twitter user")
-            console.log(error)
-        }
+      const dbUserResult = await loginWithTwitter()
+      console.log(await dbUserResult.json())
+      setLoginState(true)
+      setOnboardingState("JoinRoom")
+    } catch (error) {
+      console.log("Error with authenticating Twitter user")
+      console.log(error)
     }
+  }
 
-    const didTapJoinRoom = async () => {
-        try {
-            Router.push('/')
-            await gameManager.initializeGame(roomId)
-        } catch (error) {
-            console.log("Failed to join room due to error:")
-            console.log(error)
-        }
+  const didTapJoinRoom = async () => {
+    try {
+      Router.push('/')
+      await gameManager.initializeGame(roomId)
+    } catch (error) {
+      console.log("Failed to join room due to error:")
+      console.log(error)
+    }
     
-    }
+  }
 
-    useEffect(() => {
-        setLoginState(isUserLoggedIn())
-    },[])
+  useEffect(() => {
+    setLoginState(isUserLoggedIn())
+  },[])
 
-    const renderOnboardingComponent = 
+  const renderOnboardingComponent = 
   (state: OnboardingState) => { 
   	switch(state) {
   	case "Login":
@@ -56,12 +54,11 @@ export default function LoginPage () {
   	}
   }
 
-
-    return (
-        <div className={style.loginBackground}>
-            <div className={style.loginModalView}>
-                { renderOnboardingComponent(onboardingState) }
-            </div>
-        </div>
-    )
+  return (
+    <div className={styles.loginBackground}>
+      <div className={styles.loginModalView}>
+        { renderOnboardingComponent(onboardingState) }
+      </div>
+    </div>
+  )
 }

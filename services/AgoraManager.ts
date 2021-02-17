@@ -161,7 +161,6 @@ class AgoraManager {
 
 }
 
-
 /* AgoraManager types */
 interface RTC {
   client: IAgoraRTCClient;

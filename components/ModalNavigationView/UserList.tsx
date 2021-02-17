@@ -1,5 +1,5 @@
 
-import styles from './modalNavigation.module.css'
+import styles from './styles.module.scss'
 import React from 'react'
 import { ParticipantState } from '../../models/User'
 
