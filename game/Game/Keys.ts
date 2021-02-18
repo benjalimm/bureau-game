@@ -40,10 +40,8 @@ export function handlePressedKeys(game: Game,
       })
     }
 
-    if (props.pressedKeys[37]) {
-    // left arrow key
-    // props.pressedKeys.camera.position.x += speed
-    // props.pressedKeys.cube.position.x += speed
+    if (props.pressedKeys['ArrowLeft']) {
+  
       socketManager.emitMovement('ABC', {
         x: speed,
         y: 0,
@@ -51,10 +49,7 @@ export function handlePressedKeys(game: Game,
       });
     }
 
-    if (props.pressedKeys[38]) {
-    // Up arrow key
-    // this.camera.position.z += speed
-    // this.cube.position.z += speed
+    if (props.pressedKeys['ArrowUp']) {
 
       socketManager.emitMovement('ABC', {
         x: 0,
@@ -62,10 +57,7 @@ export function handlePressedKeys(game: Game,
         z: speed
       });
     }
-    if (props.pressedKeys[39]) {
-    // right arrow key
-    // this.camera.position.x -= speed
-    // this.cube.position.x -= speed
+    if (props.pressedKeys['ArrowRight']) {
 
       socketManager.emitMovement('ABC', {
         x: -speed,
@@ -74,10 +66,7 @@ export function handlePressedKeys(game: Game,
       });
     }
 
-    if (props.pressedKeys[40]) {
-    // down arrow key
-    // this.camera.position.z -= speed;
-    // this.cube.position.z -= speed
+    if (props.pressedKeys['ArrowDown']) {
 
       socketManager.emitMovement('ABC', {
         x: 0,

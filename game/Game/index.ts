@@ -7,12 +7,13 @@ import {
 import { HashTable } from '../../models/Common';
 import { RoomParticipant } from '../../models/User';
 import { Room } from '../Room';
-import { onParticipantChange } from './ParticipantMethods';
+import { onParticipantChange } from './Participants';
 import { setupLights, setupShadows } from './Lights'
 import { setupCamera, attachCameraToUser } from './Camera'
 import { setupGround } from './Ground'
 import { handlePressedKeys } from './Keys'
 import { keyboardManager } from '../../services/KeyboardManager';
+import { moveUser, setMeshAtPosition } from './Movement';
 
 export type ParticipantChangeFunction = (
   participant: RoomParticipant | null,
@@ -76,30 +77,21 @@ export default class Game {
 
   didReceiveGameData(gameData: GameData, uid: string) {
     console.log('didReceiveGameData');
-    gameData.userMovements.forEach((movement) => {
-      const changeInPosition = movement.changeInPosition;
-      const mesh: THREE.Mesh | undefined = this.userMeshesTable[movement.uid];
-      if (changeInPosition && mesh) {
-        mesh.position.x += changeInPosition.x;
-        mesh.position.y += changeInPosition.y;
-        mesh.position.z += changeInPosition.z;
 
-        /// If movement is user's
-        if (movement.uid === uid) {
-          this.camera.position.x += changeInPosition.x;
-          this.camera.position.y += changeInPosition.y;
-          this.camera.position.z += changeInPosition.z;
-        }
-      }
+    gameData.userMovements.forEach((movement) => {
+      moveUser(this, {
+        userMovement: movement,
+        uid: uid
+      })
     });
 
     gameData.userStates.forEach((userState) => {
       const mesh: THREE.Mesh | undefined = this.userMeshesTable[userState.uid];
 
       if (mesh) {
-        mesh.position.x = userState.position.x;
-        mesh.position.y = userState.position.y;
-        mesh.position.z = userState.position.z;
+        setMeshAtPosition(mesh, {
+          position: userState.position
+        })
       }
     });
   }

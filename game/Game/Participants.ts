@@ -1,6 +1,6 @@
 import { RoomParticipant } from '../../models/User';
 import { socketManager } from '../../services/SocketManager';
-import Game, { ParticipantChangeFunction } from '../Game'
+import Game, { ParticipantChangeFunction } from '.'
 import { OutgoingParticipantStateChangeData } from '../../models/Game';
 
 export type ParticipantChangeEvent = 'Join' | 'Leave' | 'Initialized' | 'StateChange';

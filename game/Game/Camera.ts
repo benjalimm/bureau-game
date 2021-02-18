@@ -1,5 +1,6 @@
 import Game from '../Game'
 import { PerspectiveCamera, Camera } from 'three';
+import { Position, UserMovement } from '../../models/Game';
 
 export function setupCamera(game: Game, props: { aspect: number }) {
   game.camera = new PerspectiveCamera(90, props.aspect, 0.1, 1000);
@@ -46,4 +47,15 @@ export function moveCamera(
       break
   }
     
+}
+
+export function moveCameraWithMovement(
+  camera: Camera,  
+  props:  { movement: Position }) {
+
+  const { movement } = props;
+  camera.position.x += movement.x;
+  camera.position.y += movement.y;
+  camera.position.z += movement.z;
+
 }

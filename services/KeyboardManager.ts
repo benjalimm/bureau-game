@@ -11,6 +11,7 @@ export default class KeyboardManager {
   constructor() {
     if (typeof window !== 'undefined') {
       window.addEventListener('keydown', (event) => {
+        console.log(event)
         this._pressedKeys[event.key] = true;
       });
       
