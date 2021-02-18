@@ -1,9 +1,8 @@
 import styles from './styles.module.scss'
 import React, { useEffect, useState, useRef } from 'react'
-import Image from 'next/image'
 import agoraManager from '../../services/AgoraManager';
-import { socketManager } from '../../services/SocketManager';
 import { gameManager } from '../../game/GameManager';
+import { setMicToMute } from '../../game/Game/ParticipantMethods';
 
 interface ItemProps {
   title: string;
@@ -20,9 +19,15 @@ export default function TabBar() {
   }, [])
 
   const onMicMuteTap = () => {
-    agoraManager.muteAudio(!isMicMuted);
-    gameManager.currentGame?.setMicToMute({state: !isMicMuted})
-    setMicMuted(!isMicMuted);
+
+    const game = gameManager.currentGame
+
+    if (game) {
+      agoraManager.muteAudio(!isMicMuted);
+      setMicToMute(game, { state: !isMicMuted })
+      setMicMuted(!isMicMuted);
+    }
+    
   }
 
   const muteMicItemProps: ItemProps = {

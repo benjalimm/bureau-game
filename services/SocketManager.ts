@@ -12,6 +12,12 @@ import { gameManager } from '../game/GameManager';
 import { urlWithPath } from './Networking';
 import { RoomParticipant } from '../models/User';
 import agoraManager from './AgoraManager';
+import { 
+  participantMuteStateDidChange, 
+  participantDidLeaveRoom, 
+  participantDidJoinRoom 
+} from '../game/Game/ParticipantMethods'
+
 const NETWORK_URL = urlWithPath('');
 
 export class SocketManager {
@@ -89,13 +95,20 @@ export class SocketManager {
       this.socketClient.on('didJoin', (data) => {
         const participant = data.participant as RoomParticipant;
         console.log(`${participant.name} just joined`);
-        /// Initialize initial room participants
-        gameManager.currentGame?.participantDidJoinRoom(participant);
+        const game = gameManager.currentGame
+
+        if (game) {
+          participantDidJoinRoom(game, { participant: participant }) 
+        }
       });
 
       this.socketClient.on('didLeave', (data) => {
         const participant = data.participant as RoomParticipant;
-        gameManager.currentGame?.participantDidLeaveRoom(participant);
+        const game = gameManager.currentGame
+        if (game) {
+          participantDidLeaveRoom(game, { participant: participant })
+          
+        }
       });
 
       this.socketClient.on('bureauGameError', (data) => {
@@ -105,10 +118,15 @@ export class SocketManager {
       this.socketClient.on('participantStateChange', (data) => {
         console.log('participantStateChange');
         const stateChangeData = data as IncomingParticipantStateChangeData;
-        gameManager.currentGame?.participantMuteStateDidChange({
-          uid: stateChangeData.uid,
-          isMuted: stateChangeData.data.isMuted
-        });
+
+        const game = gameManager.currentGame
+
+        if (game) {
+          participantMuteStateDidChange(game, {
+            uid: stateChangeData.uid,
+            isMuted: stateChangeData.data.isMuted
+          })
+        }
       });
     });
   }

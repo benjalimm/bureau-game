@@ -1,17 +1,20 @@
 import * as THREE from 'three';
-import { socketManager } from '../../services/SocketManager';
 import {
   UserState,
   GameData,
-  Position,
-  OutgoingParticipantStateChangeData
+  Position
 } from '../../models/Game';
-import { HashTable, NumberHashTable } from '../../models/Common';
+import { HashTable } from '../../models/Common';
 import { RoomParticipant } from '../../models/User';
 import { Room } from '../Room';
+import { onParticipantChange } from './ParticipantMethods';
+import { setupLights, setupShadows } from './Lights'
+import { setupCamera, attachCameraToUser } from './Camera'
+import { setupGround } from './Ground'
+import { handlePressedKeys } from './Keys'
+import { keyboardManager } from '../../services/KeyboardManager';
 
-export type ParticipantChangeEvent = 'Join' | 'Leave' | 'Initialized' | 'StateChange';
-type ParticipantChangeFunction = (
+export type ParticipantChangeFunction = (
   participant: RoomParticipant | null,
   currentParticipants: RoomParticipant[]
 ) => void;
@@ -22,65 +25,28 @@ export default class Game {
   scene?: THREE.Scene;
   currentRoom?: Room;
 
-  pressedKeys: NumberHashTable<boolean> = {};
-
   userStates: UserState[];
   userMeshesTable: HashTable<THREE.Mesh> = {};
 
-  listenerHashTable: HashTable<ParticipantChangeFunction> = {};
+  participantChangesListenerHashTable: HashTable<ParticipantChangeFunction> = {};
 
   player = { height: 1.8, speed: 0.2, turnSpeed: Math.PI * 0.02 };
   
   initialize(height: number, width: number) {
+    
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x87ceeb);
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
 
     this.renderer.setClearColor('#000000');
     this.renderer.setSize(width, height);
-    this.setupGround();
-    this.setupCamera(width / height);
-    this.setupShadows();
-    this.setupLights();
-  }
-
-  private setupCamera(aspect: number) {
-    this.camera = new THREE.PerspectiveCamera(90, aspect, 0.1, 1000);
-
-    this.camera.position.set(-1, 20, -10);
-  }
-
-  private setupGround() {
-    const geo = new THREE.PlaneGeometry(100, 100, 10, 10);
-    const mat = new THREE.MeshPhongMaterial({
-      color:     0x58d10d,
-      wireframe: false
-    });
-    const plane = new THREE.Mesh(geo, mat);
-    plane.rotation.x -= Math.PI / 2;
-    plane.receiveShadow = true;
-    this.scene.add(plane);
-  }
-
-  private setupShadows() {
-    //1. Enable shadows in renderer
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.BasicShadowMap;
-  }
-
-  private setupLights() {
-    /// Ambient light that fills the whole room
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-
-    /// Point light for the camera
-    const pointLight = new THREE.PointLight(0xffffff, 0.5, 18);
-    pointLight.position.set(-3, 6, -3);
-    pointLight.castShadow = true;
-    pointLight.shadow.camera.near = 0.1;
-    pointLight.shadow.camera.far = 25;
-
-    this.scene.add(ambientLight);
-    this.scene.add(pointLight);
+    setupGround(this);
+    
+    setupCamera(this, { 
+      aspect: width / height 
+    })
+    setupShadows(this);
+    setupLights(this);
   }
 
   renderScene() {
@@ -95,7 +61,9 @@ export default class Game {
   }
 
   animate() {
-    this.handlePressedKeys();
+    handlePressedKeys(this, {
+      pressedKeys: keyboardManager.pressedKeys
+    })
     this.renderScene();
   }
 
@@ -104,85 +72,6 @@ export default class Game {
       const mesh = this.userMeshesTable[key];
       this.scene.remove(mesh);
     });
-  }
-
-  private handlePressedKeys() {
-    const speed = this.player.speed;
-    if (this.pressedKeys[87]) {
-      // W key
-      console.log('DidPress W key');
-      this.camera.position.x -=
-        Math.sin(this.camera.rotation.y) * this.player.speed;
-      this.camera.position.z -=
-        -Math.cos(this.camera.rotation.y) * this.player.speed;
-    }
-    if (this.pressedKeys[83]) {
-      // S key
-      this.camera.position.x +=
-        Math.sin(this.camera.rotation.y) * this.player.speed;
-      this.camera.position.z +=
-        -Math.cos(this.camera.rotation.y) * this.player.speed;
-    }
-    if (this.pressedKeys[65]) {
-      // A key
-      this.camera.position.x +=
-        Math.sin(this.camera.rotation.y + Math.PI / 2) * this.player.speed;
-      this.camera.position.z +=
-        -Math.cos(this.camera.rotation.y + Math.PI / 2) * this.player.speed;
-    }
-    if (this.pressedKeys[68]) {
-      // D key
-      this.camera.position.x +=
-        Math.sin(this.camera.rotation.y - Math.PI / 2) * this.player.speed;
-      this.camera.position.z +=
-        -Math.cos(this.camera.rotation.y - Math.PI / 2) * this.player.speed;
-    }
-
-    if (this.pressedKeys[37]) {
-      // left arrow key
-      // this.camera.position.x += speed
-      // this.cube.position.x += speed
-      socketManager.emitMovement('ABC', {
-        x: speed,
-        y: 0,
-        z: 0
-      });
-    }
-
-    if (this.pressedKeys[38]) {
-      // Up arrow key
-      // this.camera.position.z += speed
-      // this.cube.position.z += speed
-
-      socketManager.emitMovement('ABC', {
-        x: 0,
-        y: 0,
-        z: speed
-      });
-    }
-    if (this.pressedKeys[39]) {
-      // right arrow key
-      // this.camera.position.x -= speed
-      // this.cube.position.x -= speed
-
-      socketManager.emitMovement('ABC', {
-        x: -speed,
-        y: 0,
-        z: 0
-      });
-    }
-
-    if (this.pressedKeys[40]) {
-      // down arrow key
-      // this.camera.position.z -= speed;
-      // this.cube.position.z -= speed
-
-      socketManager.emitMovement('ABC', {
-        x: 0,
-        y: 0,
-        z: -speed
-      });
-    }
   }
 
   didReceiveGameData(gameData: GameData, uid: string) {
@@ -215,10 +104,6 @@ export default class Game {
     });
   }
 
-  keyDidInteract(keyCode: number, didPress: boolean) {
-    this.pressedKeys[keyCode] = didPress;
-  }
-
   removeUserMesh(uid: string) {
     const existingMesh = this.userMeshesTable[uid];
     if (existingMesh) {
@@ -241,27 +126,6 @@ export default class Game {
     return userMesh;
   }
 
-  participantDidJoinRoom(participant: RoomParticipant) {
-    this.currentRoom.addParticipant(participant);
-    this.onParticipantChange({
-      event:               'Join',
-      changingParticipant: participant,
-      currentParticipants: this.currentRoom.participants
-    });
-
-    this.addUserMesh(participant.uid, { x: 1, y: 1, z: 1 });
-  }
-
-  participantDidLeaveRoom(participant: RoomParticipant) {
-    this.currentRoom.removeParticipant(participant.uid);
-    this.onParticipantChange({
-      event:               'Leave',
-      changingParticipant: participant,
-      currentParticipants: this.currentRoom.participants
-    });
-    this.removeUserMesh(participant.uid);
-  }
-
   private createNewSphereMesh(): THREE.Mesh {
     const geometry = new THREE.SphereGeometry(1, 20);
     const material = new THREE.MeshPhongMaterial({
@@ -281,77 +145,21 @@ export default class Game {
       this.addUserMesh(userState.uid, userState.position);
     });
 
-    this.attachCameraToUser(userId);
+    attachCameraToUser(this, { 
+      uid: userId
+    });
   }
 
   initializeRoom(roomId: string, participants: RoomParticipant[]) {
     this.currentRoom = new Room(roomId);
     this.currentRoom.participants = participants;
-    this.onParticipantChange({
+    onParticipantChange(this, {
       event: 'Initialized',
       changingParticipant: null,
       currentParticipants: participants
     });
   }
 
-  attachCameraToUser(uid: string) {
-    const userMesh: THREE.Mesh | undefined = this.userMeshesTable[uid];
-
-    if (userMesh) {
-      this.camera.lookAt(userMesh.position);
-    }
-  }
-
-  onParticipantChangeEvent(
-    event: ParticipantChangeEvent,
-    func: ParticipantChangeFunction
-  ): void {
-    this.listenerHashTable[event] = func;
-  }
-
-  removeParticipantChangeEventListener(event: ParticipantChangeEvent) {
-    this.listenerHashTable[event] = undefined;
-  }
-
-  onParticipantChange(props: {
-    event: ParticipantChangeEvent;
-    changingParticipant: RoomParticipant | null;
-    currentParticipants: RoomParticipant[];
-  }) {
-    const func = this.listenerHashTable[props.event];
-    if (func) {
-      func(props.changingParticipant, props.currentParticipants);
-    }
-  }
-
-  setMicToMute(props: { state: boolean }) {
-    const participantStateChangeData: OutgoingParticipantStateChangeData = {
-      type: 'MIC_MUTE_STATUS',
-      data: { isMuted: props.state }
-    };
-
-    const roomId = this.currentRoom?.roomId;
-    if (roomId) {
-      socketManager.emit(
-        'participantStateChange',
-        roomId,
-        participantStateChangeData
-      );
-    }
-  }
-
-  participantMuteStateDidChange(props: { uid: string; isMuted: boolean }) {
-    const {
-      changingParticipant,
-      currentParticipants
-    } = this.currentRoom?.participantMuteStateDidChange(props);
-
-    this.onParticipantChange({
-      event: 'StateChange',
-      changingParticipant: changingParticipant,
-      currentParticipants: currentParticipants
-    });
-  }
 }
 
 const game = new Game();

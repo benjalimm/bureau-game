@@ -38,20 +38,9 @@ export default function GameCanvas() {
       game.handleResize(mount.current.clientHeight, mount.current.clientWidth)
     }
 
-    function keyDown(event){
-      game.keyDidInteract(event.keyCode, true)
-    }
-    
-    function keyUp(event){
-      game.keyDidInteract(event.keyCode, false)
-    }
-
     const addWindowListeners = () => {
       window.addEventListener('resize', handleResize)
 
-      ///Listen to pressing of keys
-      window.addEventListener('keydown', keyDown);
-      window.addEventListener('keyup', keyUp);
     }
     
     start()

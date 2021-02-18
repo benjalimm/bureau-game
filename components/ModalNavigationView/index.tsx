@@ -6,6 +6,7 @@ import { gameManager } from '../../game/GameManager';
 import UserList from './UserList'
 import TabBar from './TabBar';
 import agoraManager from '../../services/AgoraManager';
+import { onParticipantChangeEvent } from '../../game/Game/ParticipantMethods' 
 
 export default function ModalNavigationView() {
 
@@ -27,27 +28,42 @@ export default function ModalNavigationView() {
   //2. If game changes, reinitialize listeners 
   useEffect(() => {
     console.log("Game use effect triggered")
-    
-    currentGame?.onParticipantChangeEvent("Join", (joiningParticipant, currentParticipants) => {
-      console.log("Participant joined")
-      setRoomParticipants([...currentParticipants]);
-    })
 
-    currentGame?.onParticipantChangeEvent("Leave", (leavingParticipant, currentParticipants) => {
-      console.log("Participant left")
-      setRoomParticipants([...currentParticipants]);
-    })
+    if (currentGame) {
+      onParticipantChangeEvent(currentGame, { 
+        event: "Join", 
+        onChange: (joiningParticipant, currentParticipants) => {
+          console.log("Participant joined")
+          setRoomParticipants([...currentParticipants]);
+        }
+      })
 
-    currentGame?.onParticipantChangeEvent("Initialized", (joiningParticipant, currentParticipants) => {
-      console.log("Participants initialized")
-      console.log(currentParticipants)
-      setRoomParticipants([...currentParticipants]);
-    })
+      onParticipantChangeEvent(currentGame, { 
+        event: "Leave", 
+        onChange: (leavingParticipant, currentParticipants) => {
+          console.log("Participant left")
+          setRoomParticipants([...currentParticipants]);
+        }
+      })
 
-    currentGame?.onParticipantChangeEvent("StateChange", (changingParticipant, currentParticipants) => {
-      console.log(`${changingParticipant.uid} changed participant state`)
-      setRoomParticipants([...currentParticipants])
-    })
+      onParticipantChangeEvent(currentGame, { 
+        event: "Initialized", 
+        onChange: (joiningParticipant, currentParticipants) => {
+          console.log("Participants initialized")
+          console.log(currentParticipants)
+          setRoomParticipants([...currentParticipants]);
+        }
+      })
+
+      onParticipantChangeEvent(currentGame, { 
+        event: "StateChange", 
+        onChange: (changingParticipant, currentParticipants) => {
+          console.log(`${changingParticipant.uid} changed participant state`)
+          setRoomParticipants([...currentParticipants])
+        }
+      })
+
+    }
   }, [currentGame])
 
   useEffect(() => {
