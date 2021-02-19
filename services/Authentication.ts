@@ -6,7 +6,7 @@ import { createUserWithTwitter } from './Networking';
 export const initializeFirebase = () => {
   if (typeof window !== 'undefined' && !firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
   }
 };
 
@@ -26,10 +26,10 @@ export const loginWithTwitter = async () => {
   return createUserWithTwitter(user);
 };
 
-export const logout = async () => {
-  console.log('Signing out');
-  await firebase.auth().signOut();
-};
+// export const logout = async () => {
+//   console.log('Signing out');
+//   await firebase.auth().signOut();
+// };
 
 initializeFirebase();
 export { firebase };

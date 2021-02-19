@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styles from './styles.module.scss'
 import { loginWithTwitter, isUserLoggedIn } from '../../services/Authentication'
 import "firebase/auth"
+import { firebase } from '../../services/Authentication' 
 import Login from './Login'
 import JoinRoom from './JoinRoom'
 import Router from 'next/router'
@@ -41,8 +42,21 @@ export default function LoginPage () {
   }
 
   useEffect(() => {
-    setLoginState(isUserLoggedIn())
-  },[])
+    firebase.auth().onAuthStateChanged(user => {
+      const loggedIn = (!!user)
+      console.log("FOO is user logged in")
+      console.log(loggedIn)
+      setLoginState(loggedIn)
+    })
+  }, [])
+
+  useEffect(() => {
+
+    if (isLoggedIn) {
+      setOnboardingState("JoinRoom")
+    }
+
+  }, [isLoggedIn])
 
   const renderOnboardingComponent = 
   (state: OnboardingState) => { 

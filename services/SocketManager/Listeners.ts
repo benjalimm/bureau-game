@@ -11,7 +11,6 @@ export function listenToParticipantDidJoinEvent(manager: SocketManager) {
     console.log(`${participant.name} just joined`);
     
     const game = gameManager.currentGame
-
     if (game) {
       participantDidJoinRoom(game, { participant: participant }) 
     }
