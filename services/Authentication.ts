@@ -26,10 +26,10 @@ export const loginWithTwitter = async () => {
   return createUserWithTwitter(user);
 };
 
-// export const logout = async () => {
-//   console.log('Signing out');
-//   await firebase.auth().signOut();
-// };
+export const logout = async () => {
+  console.log('Signing out');
+  await firebase.auth().signOut();
+};
 
 initializeFirebase();
 export { firebase };

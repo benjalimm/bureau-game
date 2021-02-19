@@ -59,6 +59,7 @@ export default function GameCanvas() {
         game.deinitialize()
       }
     }
+    return () => {}
   }, [])
   
   return <div className={styles.vis} ref={mount} />
