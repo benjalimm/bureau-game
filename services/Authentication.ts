@@ -14,6 +14,10 @@ export const isUserLoggedIn = () => {
   return firebase.auth().currentUser !== null;
 };
 
+export function getCurrentUserId(): string | undefined {
+  return firebase.auth().currentUser.uid
+}
+
 export const loginWithTwitter = async () => {
   const provider = new firebase.auth.TwitterAuthProvider();
   const result = await firebase.auth().signInWithPopup(provider);

@@ -6,7 +6,7 @@ import { gameManager } from '../../game/GameManager';
 import UserList from './UserList'
 import TabBar from './TabBar';
 import agoraManager from '../../services/AgoraManager';
-import { onParticipantChangeEvent } from '../../game/Game/ParticipantMethods' 
+import { onParticipantChangeEvent } from '../../game/Game/Participants' 
 
 export default function ModalNavigationView() {
 

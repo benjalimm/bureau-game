@@ -1,6 +1,7 @@
 import { HashTable } from '../models/Common';
 import agoraManager from '../services/AgoraManager';
 import { socketManager } from '../services/SocketManager';
+import { joinRoom } from '../services/SocketManager/EmitMethods';
 import Game, { game as initialGame } from './Game';
 
 type OnGameChangeFunc = (game: Game) => void;
@@ -11,7 +12,7 @@ class GameManager {
   get currentGame(): Game | undefined {
     return this.game;
   }
-  private onInitialize: OnGameChangeFunc;
+  private onInitialize?: OnGameChangeFunc;
 
   onGameChange(func: OnGameChangeFunc) {
     this.onGameChangeFunc = func;
@@ -45,6 +46,10 @@ class GameManager {
     console.log('Setting current game');
     if (this.game === undefined) {
       this.onInitialize(game);
+      // if (this.onInitialize) {
+        
+      // }
+      
     }
 
     this.game = game;
@@ -58,7 +63,10 @@ class GameManager {
     await socketManager.connect();
     await agoraManager.setupListeners(); /// Setup listeners before joining
     const agoraUid = await agoraManager.joinChannel(roomId);
-    socketManager.joinRoom(roomId, `${agoraUid}`);
+    
+    joinRoom(socketManager, {
+      joiningRoomId: roomId,
+    })
     await agoraManager.setupAudio();
   }
 }

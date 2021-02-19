@@ -1,8 +1,7 @@
 import * as THREE from 'three';
 import {
   UserState,
-  GameData,
-  Position
+  GameData
 } from '../../models/Game';
 import { HashTable } from '../../models/Common';
 import { RoomParticipant } from '../../models/User';
@@ -14,6 +13,7 @@ import { setupGround } from './Ground'
 import { handlePressedKeys } from './Keys'
 import { keyboardManager } from '../../services/KeyboardManager';
 import { moveUser, setMeshAtPosition } from './Movement';
+import { addUserMesh } from './Mesh';
 
 export type ParticipantChangeFunction = (
   participant: RoomParticipant | null,
@@ -96,45 +96,15 @@ export default class Game {
     });
   }
 
-  removeUserMesh(uid: string) {
-    const existingMesh = this.userMeshesTable[uid];
-    if (existingMesh) {
-      this.scene.remove(existingMesh);
-    }
-  }
-
-  addUserMesh(uid: string, position: Position): THREE.Mesh {
-    /// Remove existing user mesh if it exists
-    this.removeUserMesh(uid);
-
-    const userMesh = this.createNewSphereMesh();
-    this.userMeshesTable[uid] = userMesh;
-    this.scene.add(userMesh);
-
-    /// Set initial position
-    userMesh.position.x = position.x;
-    userMesh.position.z = position.y;
-    userMesh.position.y = position.z;
-    return userMesh;
-  }
-
-  private createNewSphereMesh(): THREE.Mesh {
-    const geometry = new THREE.SphereGeometry(1, 20);
-    const material = new THREE.MeshPhongMaterial({
-      color:     0xff00ff,
-      wireframe: false
-    });
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.receiveShadow = true;
-    mesh.castShadow = true;
-    return mesh;
-  }
-
   initializeInitialUserStates(userStates: UserState[], userId: string) {
     this.userStates = userStates;
 
     userStates.forEach((userState) => {
-      this.addUserMesh(userState.uid, userState.position);
+      
+      addUserMesh(this, { 
+        uid: userState.uid,
+        position: userState.position
+      })
     });
 
     attachCameraToUser(this, { 

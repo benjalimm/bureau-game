@@ -27,7 +27,8 @@ class AgoraManager {
   };
 
   remoteUserTracks: HashTable<IRemoteAudioTrack> = {};
-  volumeIndicatorListenerHashTable: HashTable<VolumeIndicatorResultCallBack> = {};
+  volumeIndicatorListenerHashTable: 
+  HashTable<VolumeIndicatorResultCallBack> = {};
   currentAgoraUid?: string;
 
   private volumeIntervalId: NodeJS.Timeout | null = null;

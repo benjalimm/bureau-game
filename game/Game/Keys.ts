@@ -1,6 +1,7 @@
 import { HashTable } from '../../models/Common';
 import { keyboardManager } from '../../services/KeyboardManager';
 import { socketManager } from '../../services/SocketManager';
+import { emitMovement } from '../../services/SocketManager/EmitMethods';
 import Game from '../Game'
 import { moveCamera } from './Camera';
 
@@ -41,38 +42,51 @@ export function handlePressedKeys(game: Game,
     }
 
     if (props.pressedKeys['ArrowLeft']) {
+      emitMovement(socketManager, {
+        roomId: "ABC",
+        movement: {
+          x: speed,
+          y: 0,
+          z: 0
+        }
+      })
   
-      socketManager.emitMovement('ABC', {
-        x: speed,
-        y: 0,
-        z: 0
-      });
     }
 
     if (props.pressedKeys['ArrowUp']) {
 
-      socketManager.emitMovement('ABC', {
-        x: 0,
-        y: 0,
-        z: speed
-      });
+      emitMovement(socketManager, {
+        roomId: "ABC",
+        movement: {
+          x: 0,
+          y: 0,
+          z: speed
+        }
+      })
     }
     if (props.pressedKeys['ArrowRight']) {
 
-      socketManager.emitMovement('ABC', {
-        x: -speed,
-        y: 0,
-        z: 0
-      });
+      emitMovement(socketManager, {
+        roomId: "ABC",
+        movement: {
+          x: -speed,
+          y: 0,
+          z: 0
+        }
+      })
+      
     }
 
     if (props.pressedKeys['ArrowDown']) {
 
-      socketManager.emitMovement('ABC', {
-        x: 0,
-        y: 0,
-        z: -speed
-      });
+      emitMovement(socketManager, {
+        roomId: "ABC",
+        movement: {
+          x: 0,
+          y: 0,
+          z: -speed
+        }
+      })
     }
   }
 }

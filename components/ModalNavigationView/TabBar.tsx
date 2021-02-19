@@ -2,7 +2,7 @@ import styles from './styles.module.scss'
 import React, { useEffect, useState, useRef } from 'react'
 import agoraManager from '../../services/AgoraManager';
 import { gameManager } from '../../game/GameManager';
-import { setMicToMute } from '../../game/Game/ParticipantMethods';
+import { setMicToMute } from '../../game/Game/Participants';
 
 interface ItemProps {
   title: string;

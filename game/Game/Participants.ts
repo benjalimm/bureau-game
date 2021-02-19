@@ -1,7 +1,8 @@
 import { RoomParticipant } from '../../models/User';
 import { socketManager } from '../../services/SocketManager';
 import Game, { ParticipantChangeFunction } from '.'
-import { OutgoingParticipantStateChangeData } from '../../models/Game';
+import { OutgoingParticipantStateChangeData, Position } from '../../models/Game';
+import { addUserMesh, removeUserMesh } from './Mesh';
 
 export type ParticipantChangeEvent = 'Join' | 'Leave' | 'Initialized' | 'StateChange';
 
@@ -19,27 +20,40 @@ export function onParticipantChange(game: Game, props: {
 export function participantDidJoinRoom(game: Game, props: {
   participant: RoomParticipant
 }) {
+  const { participant } = props;
+  const initialPosition: Position = {
+    x: 1,
+    y: 1,
+    z: 1
+  }
 
   game.currentRoom.addParticipant(props.participant);
   onParticipantChange(game, {
     event: 'Join',
-    changingParticipant: props.participant,
+    changingParticipant: participant,
     currentParticipants: game.currentRoom.participants
   });
-
-  game.addUserMesh(props.participant.uid, { x: 1, y: 1, z: 1 });
+  
+  addUserMesh(game, {
+    uid: participant.uid,
+    position: initialPosition
+  })
 }
 
 export function participantDidLeaveRoom(game: Game, props: { 
   participant: RoomParticipant
 }) {
-  game.currentRoom.removeParticipant(props.participant.uid);
+  const { participant } = props
+  game.currentRoom.removeParticipant(participant.uid);
   onParticipantChange(game, {
     event: 'Leave',
-    changingParticipant: props.participant,
+    changingParticipant: participant,
     currentParticipants: game.currentRoom.participants
   });
-  game.removeUserMesh(props.participant.uid);
+  
+  removeUserMesh(game, { 
+    uid: participant.uid,
+  })
 }
 
 export function participantMuteStateDidChange(game: Game, props: { uid: string; isMuted: boolean }) {
@@ -74,11 +88,10 @@ export function setMicToMute(game: Game, props: { state: boolean }) {
 
   const roomId = game.currentRoom?.roomId;
   if (roomId) {
-    socketManager.emit(
-      'participantStateChange',
-      roomId,
-      participantStateChangeData
-    );
+    socketManager.emit("participantStateChange", {
+      roomId: roomId,
+      data: participantStateChangeData
+    })
   }
   
 }

@@ -20,3 +20,8 @@ export interface SocketError {
   errorMessage: string;
   data?: any;
 }
+
+export interface SocketListenQueueItem {
+  event: string;
+  onEvent: (data: any) => void
+}
