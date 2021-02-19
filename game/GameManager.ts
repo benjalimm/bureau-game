@@ -12,6 +12,7 @@ class GameManager {
   get currentGame(): Game | undefined {
     return this.game;
   }
+  
   private onInitialize?: OnGameChangeFunc;
 
   onGameChange(func: OnGameChangeFunc) {
@@ -45,10 +46,10 @@ class GameManager {
   setCurrentGame(game: Game) {
     console.log('Setting current game');
     if (this.game === undefined) {
-      this.onInitialize(game);
-      // if (this.onInitialize) {
-        
-      // }
+      
+      if (this.onInitialize) {
+        this.onInitialize(game);
+      }
       
     }
 
@@ -62,7 +63,7 @@ class GameManager {
     await this.gameDidInitialize();
     await socketManager.connect();
     await agoraManager.setupListeners(); /// Setup listeners before joining
-    const agoraUid = await agoraManager.joinChannel(roomId);
+    await agoraManager.joinChannel(roomId);
     
     joinRoom(socketManager, {
       joiningRoomId: roomId,
