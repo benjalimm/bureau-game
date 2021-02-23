@@ -1,7 +1,7 @@
 import 'firebase/auth';
 import firebase from 'firebase/app';
 
-const _IS_LOCAL = false;
+const _IS_LOCAL = true;
 const networkUrl = 'https://bureau-backend-test.herokuapp.com';
 const localUrl = 'http://localhost:8000';
 // const socket = io(networkUrl, {transports: ['websocket']})

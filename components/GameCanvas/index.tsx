@@ -20,14 +20,14 @@ export default function GameCanvas() {
       const renderer = game.renderer
       mount.current.appendChild(renderer.domElement)
 
-      const animate = () => {
-        game.animate()
-        frameId = window.requestAnimationFrame(animate)
+      const tick = () => {
+        game.tick()
+        frameId = window.requestAnimationFrame(tick)
       }
 
       const start = () => {
         if (!frameId) {
-          frameId = requestAnimationFrame(animate)
+          frameId = requestAnimationFrame(tick)
         }
       }
 

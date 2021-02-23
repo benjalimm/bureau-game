@@ -14,17 +14,17 @@ export function moveMesh(mesh: Mesh, props: {
 
 export function moveUser(game: Game, props: {
   userMovement: UserMovement,
-  uid: string
+  uid: string /// This is the playing user id
 }) {
   const { userMovement, uid } = props;
 
   const changeInPosition = userMovement.changeInPosition;
-  const mesh: THREE.Mesh | undefined = game.userMeshesTable[userMovement.uid];
+  const mesh: Mesh | undefined = game.userMeshesTable[userMovement.uid];
   if (changeInPosition && mesh) {
 
     moveMesh(mesh, { movement: changeInPosition })
 
-    /// If movement is user's
+    // / If movement is user's
     if (userMovement.uid === uid) {
       const camera = game.camera 
       if (camera) {
@@ -34,6 +34,25 @@ export function moveUser(game: Game, props: {
       }
     }
   }
+}
+
+export function moveLocalUser(game: Game, props: {
+  uid: string,
+  movement: Position
+}) {
+  const { uid, movement } = props;
+  const mesh: Mesh | undefined = game.userMeshesTable[uid];
+
+  if (mesh) {
+    moveMesh(mesh, {
+      movement: movement
+    })
+
+    moveCameraWithMovement(game.camera, {
+      movement: movement
+    })
+  }
+
 }
 
 export function setMeshAtPosition(mesh: Mesh, props: {

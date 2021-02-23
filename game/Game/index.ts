@@ -14,6 +14,7 @@ import { handlePressedKeys } from './Keys'
 import { keyboardManager } from '../../services/KeyboardManager';
 import { moveUser, setMeshAtPosition } from './Movement';
 import { addUserMesh } from './Mesh';
+import { World } from 'cannon-es'
 
 export type ParticipantChangeFunction = (
   participant: RoomParticipant | null,
@@ -21,25 +22,36 @@ export type ParticipantChangeFunction = (
 ) => void;
 
 export default class Game {
-  renderer?: THREE.WebGLRenderer;
-  camera?: THREE.PerspectiveCamera;
-  scene?: THREE.Scene;
-  currentRoom?: Room;
 
+  /* THREE JS states */
+  renderer: THREE.WebGLRenderer;
+  scene: THREE.Scene;
+  camera?: THREE.PerspectiveCamera;
+
+  /* Room or participant states  */
+  currentRoom?: Room;
   userStates: UserState[];
   userMeshesTable: HashTable<THREE.Mesh> = {};
+  participantChangesListenerHashTable: HashTable<ParticipantChangeFunction> = {}
 
-  participantChangesListenerHashTable: HashTable<ParticipantChangeFunction> = {};
+  /* Physics state */
+  physicsWorld: World;
+  clock: THREE.Clock = new THREE.Clock()
+  oldElapsedTime = 0
 
   player = { height: 1.8, speed: 0.2, turnSpeed: Math.PI * 0.02 };
-  
-  initialize(height: number, width: number) {
-    
+
+  constructor() {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x87ceeb);
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
-
     this.renderer.setClearColor('#000000');
+    this.physicsWorld = new World()
+    this.physicsWorld.gravity.set(0, -9.82, 0)
+  }
+  
+  initialize(height: number, width: number) {
+    
     this.renderer.setSize(width, height);
     setupGround(this);
     
@@ -61,7 +73,13 @@ export default class Game {
     this.renderScene();
   }
 
-  animate() {
+  tick() {
+    const elapsedTime = this.clock.getElapsedTime()
+    const deltaTime = elapsedTime - this.oldElapsedTime
+    this.oldElapsedTime = elapsedTime 
+
+    this.physicsWorld.step(1 / 60, deltaTime, 3)
+
     handlePressedKeys(this, {
       pressedKeys: keyboardManager.pressedKeys
     })
@@ -78,12 +96,12 @@ export default class Game {
   didReceiveGameData(gameData: GameData, uid: string) {
     console.log('didReceiveGameData');
 
-    gameData.userMovements.forEach((movement) => {
-      moveUser(this, {
-        userMovement: movement,
-        uid: uid
-      })
-    });
+    // gameData.userMovements.forEach((movement) => {
+    //   moveUser(this, {
+    //     userMovement: movement,
+    //     uid: uid
+    //   })
+    // });
 
     gameData.userStates.forEach((userState) => {
       const mesh: THREE.Mesh | undefined = this.userMeshesTable[userState.uid];
