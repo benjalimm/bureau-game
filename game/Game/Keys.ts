@@ -59,10 +59,10 @@ export function handlePressedKeys(game: Game,
           movement: movement
         })
 
-        emitMovement(socketManager, {
-          roomId: "ABC",
-          movement: movement
-        })
+        // emitMovement(socketManager, {
+        //   roomId: "ABC",
+        //   movement: movement
+        // })
       }
 
     }
@@ -82,10 +82,10 @@ export function handlePressedKeys(game: Game,
           movement: movement
         })
 
-        emitMovement(socketManager, {
-          roomId: "ABC",
-          movement: movement
-        })
+        // emitMovement(socketManager, {
+        //   roomId: "ABC",
+        //   movement: movement
+        // })
       }
       
     }
@@ -103,10 +103,10 @@ export function handlePressedKeys(game: Game,
           movement: movement
         })
 
-        emitMovement(socketManager, {
-          roomId: "ABC",
-          movement: movement
-        })
+        // emitMovement(socketManager, {
+        //   roomId: "ABC",
+        //   movement: movement
+        // })
       }
       
     }
@@ -125,13 +125,36 @@ export function handlePressedKeys(game: Game,
           movement: movement
         })
 
-        emitMovement(socketManager, {
-          roomId: "ABC",
-          movement: movement
-        })
+        // emitMovement(socketManager, {
+        //   roomId: "ABC",
+        //   movement: movement
+        // })
        
       }
       
+    }
+
+    if (props.pressedKeys[' ']) {
+
+      if (uid) {
+
+        const movement: Position = {
+          x: 0,
+          y: 1,
+          z: 0
+        }
+        moveLocalUser(game, {
+          uid: uid,
+          movement: movement
+        })
+
+        // emitMovement(socketManager, {
+        //   roomId: "ABC",
+        //   movement: movement
+        // })
+       
+      }
+
     }
   }
 }

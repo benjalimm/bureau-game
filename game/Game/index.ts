@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import {
   UserState,
-  GameData
+  GameData,
+  GameObjectState
 } from '../../models/Game';
 import { HashTable } from '../../models/Common';
 import { RoomParticipant } from '../../models/User';
@@ -15,6 +16,8 @@ import { keyboardManager } from '../../services/KeyboardManager';
 import { moveUser, setMeshAtPosition } from './Movement';
 import { addUserMesh } from './Mesh';
 import { World } from 'cannon-es'
+import { Vector3 } from 'three';
+import { setupPhysicsMaterials } from './Physics/Material';
 
 export type ParticipantChangeFunction = (
   participant: RoomParticipant | null,
@@ -24,8 +27,8 @@ export type ParticipantChangeFunction = (
 export default class Game {
 
   /* THREE JS states */
-  renderer: THREE.WebGLRenderer;
-  scene: THREE.Scene;
+  renderer?: THREE.WebGLRenderer;
+  scene?: THREE.Scene;
   camera?: THREE.PerspectiveCamera;
 
   /* Room or participant states  */
@@ -33,6 +36,8 @@ export default class Game {
   userStates: UserState[];
   userMeshesTable: HashTable<THREE.Mesh> = {};
   participantChangesListenerHashTable: HashTable<ParticipantChangeFunction> = {}
+  gameObjectsHashTable: HashTable<GameObjectState> = {}
+  groundObjectState?: GameObjectState
 
   /* Physics state */
   physicsWorld: World;
@@ -42,17 +47,19 @@ export default class Game {
   player = { height: 1.8, speed: 0.2, turnSpeed: Math.PI * 0.02 };
 
   constructor() {
-    this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x87ceeb);
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
-    this.renderer.setClearColor('#000000');
+    
     this.physicsWorld = new World()
     this.physicsWorld.gravity.set(0, -9.82, 0)
   }
   
   initialize(height: number, width: number) {
-    
+
+    this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(0x87ceeb);
+    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer.setClearColor('#000000');
     this.renderer.setSize(width, height);
+
     setupGround(this);
     
     setupCamera(this, { 
@@ -60,6 +67,7 @@ export default class Game {
     })
     setupShadows(this);
     setupLights(this);
+    setupPhysicsMaterials(this)
   }
 
   renderScene() {
@@ -83,6 +91,14 @@ export default class Game {
     handlePressedKeys(this, {
       pressedKeys: keyboardManager.pressedKeys
     })
+
+    //Update physics
+    for (const key of Object.keys(this.gameObjectsHashTable)) {
+      const gameObject = this.gameObjectsHashTable[key]
+      const { x, y, z } = gameObject.body.position
+      gameObject.mesh.position.copy(new Vector3(x, y, z))
+    }
+
     this.renderScene();
   }
 
@@ -138,6 +154,14 @@ export default class Game {
       changingParticipant: null,
       currentParticipants: participants
     });
+  }
+
+  addGameObjectState(props: {
+    gameObjectState: GameObjectState,
+    id: string 
+  }) {
+    const { gameObjectState, id } = props;
+    this.gameObjectsHashTable[id] = gameObjectState
   }
 
 }

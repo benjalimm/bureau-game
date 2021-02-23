@@ -1,3 +1,6 @@
+import { Mesh } from 'three'
+import  { Body } from 'cannon-es'
+
 export interface Position {
   x: number;
   y: number;
@@ -26,6 +29,11 @@ export interface GameData {
 export interface OutgoingParticipantStateChangeData {
   type: 'MIC_MUTE_STATUS';
   data: MicMuteStateChangeData;
+}
+
+export interface GameObjectState {
+  mesh: Mesh;
+  body: Body;
 }
 
 /* 

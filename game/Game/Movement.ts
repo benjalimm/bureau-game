@@ -1,7 +1,8 @@
 import Game from '../Game';
 import { Mesh } from 'three'
-import { Position, UserMovement } from '../../models/Game';
+import { GameObjectState, Position, UserMovement } from '../../models/Game';
 import { moveCameraWithMovement } from './Camera';
+import { convertPosition } from './Mesh';
 
 export function moveMesh(mesh: Mesh, props: {
   movement: Position,
@@ -19,10 +20,16 @@ export function moveUser(game: Game, props: {
   const { userMovement, uid } = props;
 
   const changeInPosition = userMovement.changeInPosition;
-  const mesh: Mesh | undefined = game.userMeshesTable[userMovement.uid];
-  if (changeInPosition && mesh) {
+  // const mesh: Mesh | undefined = game.userMeshesTable[userMovement.uid];
 
-    moveMesh(mesh, { movement: changeInPosition })
+  const gameObject = game.gameObjectsHashTable[userMovement.uid]
+  if (changeInPosition && gameObject) {
+
+    // moveMesh(mesh, { movement: changeInPosition })
+    moveGameObject(game, { 
+      uid: uid,
+      movement: changeInPosition 
+    })
 
     // / If movement is user's
     if (userMovement.uid === uid) {
@@ -44,8 +51,12 @@ export function moveLocalUser(game: Game, props: {
   const mesh: Mesh | undefined = game.userMeshesTable[uid];
 
   if (mesh) {
-    moveMesh(mesh, {
-      movement: movement
+    // moveMesh(mesh, {
+    //   movement: movement
+    // })
+
+    moveGameObject(game, {
+      uid, movement
     })
 
     moveCameraWithMovement(game.camera, {
@@ -74,4 +85,38 @@ export async function setUserAtPosition(game: Game, props: {
   if (userMesh) {
     setMeshAtPosition(userMesh, { position: position })
   }
+}
+
+export async function moveGameObject(game: Game, props: {
+  uid: string
+  movement: Position
+}) {
+  console.log("Moving gaming object")
+  const { movement, uid } = props
+
+  const gameObj = game.gameObjectsHashTable[uid] 
+  
+  if (gameObj) {
+    console.log("Game object exists")
+    // 1. Get current position 
+    const meshPosition = gameObj.mesh.position
+
+    // 2. Update position with movement 
+    const currentPosition: Position = {
+      x: meshPosition.x += movement.x,
+      y: meshPosition.y += movement.y,
+      z: meshPosition.z += movement.z
+    }
+    const { threeVec, cannonVec } = convertPosition(currentPosition)
+
+    // 3. Update mesh
+    game.gameObjectsHashTable[uid].mesh.position.copy(threeVec)
+
+    // 4. Update body 
+    game.gameObjectsHashTable[uid].body.position.copy(cannonVec)
+
+  } else {
+    console.log(`Game object uid ${uid} does not exist`)
+  }
+  
 }
