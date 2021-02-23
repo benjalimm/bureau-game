@@ -44,3 +44,15 @@ export function setMeshAtPosition(mesh: Mesh, props: {
   mesh.position.y = position.y 
   mesh.position.z = position.z
 }
+
+export async function setUserAtPosition(game: Game, props: {
+  uid: string,
+  position: Position 
+}) {
+  const { uid, position } = props;
+  const userMesh = game.userMeshesTable[uid]
+
+  if (userMesh) {
+    setMeshAtPosition(userMesh, { position: position })
+  }
+}
