@@ -1,8 +1,10 @@
 import Game from '../Game';
 import { Mesh } from 'three'
 import { GameObjectState, Position, UserMovement } from '../../models/Game';
-import { moveCameraWithMovement } from './Camera';
+import { fixCameraOnMesh, moveCameraWithMovement } from './Camera';
 import { convertPosition } from './Mesh';
+import { Vec3 } from 'cannon-es'
+import { off } from 'process';
 
 export function moveMesh(mesh: Mesh, props: {
   movement: Position,
@@ -35,9 +37,10 @@ export function moveUser(game: Game, props: {
     if (userMovement.uid === uid) {
       const camera = game.camera 
       if (camera) {
-        moveCameraWithMovement(game.camera, {
-          movement: changeInPosition
-        })
+        // moveCameraWithMovement(game.camera, {
+        //   movement: changeInPosition
+        // }) 
+
       }
     }
   }
@@ -51,16 +54,8 @@ export function moveLocalUser(game: Game, props: {
   const mesh: Mesh | undefined = game.userMeshesTable[uid];
 
   if (mesh) {
-    // moveMesh(mesh, {
-    //   movement: movement
-    // })
-
     moveGameObject(game, {
       uid, movement
-    })
-
-    moveCameraWithMovement(game.camera, {
-      movement: movement
     })
   }
 
@@ -99,7 +94,7 @@ export async function moveGameObject(game: Game, props: {
   if (gameObj) {
     console.log("Game object exists")
     // 1. Get current position 
-    const meshPosition = gameObj.mesh.position
+    const meshPosition = gameObj.body.position
 
     // 2. Update position with movement 
     const currentPosition: Position = {
@@ -118,5 +113,19 @@ export async function moveGameObject(game: Game, props: {
   } else {
     console.log(`Game object uid ${uid} does not exist`)
   }
-  
+}
+
+export async function applyJumpForceToUser(game: Game, props: {
+  uid: string;
+}) {
+  console.log("Applying jump impulse")
+  const { uid } = props;
+  const userGameObject = game.gameObjectsHashTable[uid];
+  if (userGameObject) {   
+    console.log("Found user object")
+
+    const force = new Vec3(0, 3, 0)
+    const offset = new Vec3(0, 0 , 0)
+    userGameObject.body.applyImpulse(force,  offset)
+  }
 }

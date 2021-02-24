@@ -9,15 +9,16 @@ import { RoomParticipant } from '../../models/User';
 import { Room } from '../Room';
 import { onParticipantChange } from './Participants';
 import { setupLights, setupShadows } from './Lights'
-import { setupCamera, attachCameraToUser } from './Camera'
+import { setupCamera, attachCameraToUser, fixCameraOnMesh } from './Camera'
 import { setupGround } from './Ground'
 import { handlePressedKeys } from './Keys'
 import { keyboardManager } from '../../services/KeyboardManager';
 import { moveUser, setMeshAtPosition } from './Movement';
 import { addUserMesh } from './Mesh';
-import { World } from 'cannon-es'
+import { World, GridBroadphase, SAPBroadphase } from 'cannon-es'
 import { Vector3 } from 'three';
 import { setupPhysicsMaterials } from './Physics/Material';
+import { getCurrentUserId } from '../../services/Authentication';
 
 export type ParticipantChangeFunction = (
   participant: RoomParticipant | null,
@@ -47,9 +48,11 @@ export default class Game {
   player = { height: 1.8, speed: 0.2, turnSpeed: Math.PI * 0.02 };
 
   constructor() {
-    
+    console.log("Setup physics")
     this.physicsWorld = new World()
-    this.physicsWorld.gravity.set(0, -9.82, 0)
+    this.physicsWorld.gravity.set(0, -9.83, 0)
+    this.physicsWorld.broadphase = new SAPBroadphase(this.physicsWorld!)
+    // this.physicsWorld.allowSleep = true
   }
   
   initialize(height: number, width: number) {
@@ -85,19 +88,22 @@ export default class Game {
     const elapsedTime = this.clock.getElapsedTime()
     const deltaTime = elapsedTime - this.oldElapsedTime
     this.oldElapsedTime = elapsedTime 
-
     this.physicsWorld.step(1 / 60, deltaTime, 3)
-
-    handlePressedKeys(this, {
-      pressedKeys: keyboardManager.pressedKeys
-    })
-
     //Update physics
     for (const key of Object.keys(this.gameObjectsHashTable)) {
       const gameObject = this.gameObjectsHashTable[key]
       const { x, y, z } = gameObject.body.position
       gameObject.mesh.position.copy(new Vector3(x, y, z))
+
+      const uid = getCurrentUserId()
+      if (key === uid) {
+        fixCameraOnMesh(game, { mesh: gameObject.mesh })
+      }
     }
+
+    handlePressedKeys(this, {
+      pressedKeys: keyboardManager.pressedKeys
+    })
 
     this.renderScene();
   }

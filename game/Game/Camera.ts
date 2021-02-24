@@ -1,5 +1,5 @@
 import Game from '../Game'
-import { PerspectiveCamera, Camera } from 'three';
+import { PerspectiveCamera, Camera, Mesh } from 'three';
 import { Position, UserMovement } from '../../models/Game';
 
 export function setupCamera(game: Game, props: { aspect: number }) {
@@ -13,6 +13,13 @@ export function attachCameraToUser(game: Game, props: { uid: string }) {
   if (userMesh) {
     game.camera.lookAt(userMesh.position);
   }
+}
+
+export function fixCameraOnMesh(game: Game, props: { mesh: Mesh }) {
+  const { mesh } = props;
+  const { x, y, z } = mesh.position
+  game.camera.position.set(x - 1, y + 20, z - 10)
+  game.camera.lookAt(mesh.position)
 }
 
 export type CameraMovementType = "Forward" | "Backward" | "Left" | "Right"

@@ -33,7 +33,7 @@ export function addUserMesh(game: Game, props: {
   //Adding physics body to sphere
   const sphereShape = new Sphere(radius)
   const sphereBody = new Body({
-    mass: 1,
+    mass: 10,
     position: cannonVec,
     shape: sphereShape,
     material: defaultMaterial

@@ -6,7 +6,7 @@ import { socketManager } from '../../services/SocketManager';
 import { emitMovement } from '../../services/SocketManager/EmitMethods';
 import Game from '../Game'
 import { moveCamera } from './Camera';
-import { moveLocalUser, moveUser } from './Movement';
+import { applyJumpForceToUser, moveLocalUser, moveUser } from './Movement';
 
 export function handlePressedKeys(game: Game, 
   props: { pressedKeys: HashTable<boolean> 
@@ -17,144 +17,121 @@ export function handlePressedKeys(game: Game,
 
   /* Handle camera movement here */
   const camera = game.camera
-  if (camera) {
-    if (props.pressedKeys['w']) {
-      moveCamera(camera, {
-        direction: "Forward",
-        speed: speed
+
+  if (props.pressedKeys['ArrowLeft']) {
+
+    if (uid) {
+
+      const movement: Position = {
+        x: speed,
+        y: 0,
+        z: 0
+      }
+      moveLocalUser(game, {
+        uid: uid,
+        movement: movement
       })
-    
-    }
-    if (props.pressedKeys['s']) {
-      moveCamera(camera, {
-        direction: "Backward",
-        speed: speed
-      })
-    }
-    if (props.pressedKeys['a']) {
-      moveCamera(camera, {
-        direction: "Left",
-        speed: speed
-      })
-  
-    }
-    if (props.pressedKeys['d']) {
-      moveCamera(camera, {
-        direction: "Right",
-        speed: speed
-      })
+
+      // emitMovement(socketManager, {
+      //   roomId: "ABC",
+      //   movement: movement
+      // })
     }
 
-    if (props.pressedKeys['ArrowLeft']) {
+  }
 
-      if (uid) {
+  if (props.pressedKeys['ArrowUp']) {
 
-        const movement: Position = {
-          x: speed,
-          y: 0,
-          z: 0
-        }
-        moveLocalUser(game, {
-          uid: uid,
-          movement: movement
-        })
+    if (uid) {
 
-        // emitMovement(socketManager, {
-        //   roomId: "ABC",
-        //   movement: movement
-        // })
+      const movement: Position = {
+        x: 0,
+        y: 0,
+        z: speed
       }
 
+      moveLocalUser(game, {
+        uid: uid,
+        movement: movement
+      })
+
+      // emitMovement(socketManager, {
+      //   roomId: "ABC",
+      //   movement: movement
+      // })
     }
-
-    if (props.pressedKeys['ArrowUp']) {
-
-      if (uid) {
-
-        const movement: Position = {
-          x: 0,
-          y: 0,
-          z: speed
-        }
-
-        moveLocalUser(game, {
-          uid: uid,
-          movement: movement
-        })
-
-        // emitMovement(socketManager, {
-        //   roomId: "ABC",
-        //   movement: movement
-        // })
-      }
       
-    }
-    if (props.pressedKeys['ArrowRight']) {
+  }
+  if (props.pressedKeys['ArrowRight']) {
 
-      if (uid) {      
+    if (uid) {      
 
-        const movement: Position = {
-          x: -speed,
-          y: 0,
-          z: 0
-        }
-        moveLocalUser(game, {
-          uid: uid,
-          movement: movement
-        })
-
-        // emitMovement(socketManager, {
-        //   roomId: "ABC",
-        //   movement: movement
-        // })
+      const movement: Position = {
+        x: -speed,
+        y: 0,
+        z: 0
       }
-      
+      moveLocalUser(game, {
+        uid: uid,
+        movement: movement
+      })
+
+      // emitMovement(socketManager, {
+      //   roomId: "ABC",
+      //   movement: movement
+      // })
     }
+      
+  }
 
-    if (props.pressedKeys['ArrowDown']) {
+  if (props.pressedKeys['ArrowDown']) {
 
-      if (uid) {
+    if (uid) {
 
-        const movement: Position = {
-          x: 0,
-          y: 0,
-          z: -speed
-        }
-        moveLocalUser(game, {
-          uid: uid,
-          movement: movement
-        })
+      const movement: Position = {
+        x: 0,
+        y: 0,
+        z: -speed
+      }
+      moveLocalUser(game, {
+        uid: uid,
+        movement: movement
+      })
 
-        // emitMovement(socketManager, {
-        //   roomId: "ABC",
-        //   movement: movement
-        // })
+      // emitMovement(socketManager, {
+      //   roomId: "ABC",
+      //   movement: movement
+      // })
        
-      }
+    }
       
-    }
+  }
 
-    if (props.pressedKeys[' ']) {
+  if (props.pressedKeys[' ']) {
 
-      if (uid) {
+    if (uid) {
 
-        const movement: Position = {
-          x: 0,
-          y: 1,
-          z: 0
-        }
-        moveLocalUser(game, {
-          uid: uid,
-          movement: movement
-        })
+      // const movement: Position = {
+      //   x: 0,
+      //   y: 1,
+      //   z: 0
+      // }
+      // moveLocalUser(game, {
+      //   uid: uid,
+      //   movement: movement
+      // })
 
-        // emitMovement(socketManager, {
-        //   roomId: "ABC",
-        //   movement: movement
-        // })
+      applyJumpForceToUser(game, {
+        uid: uid
+      })
+
+      // emitMovement(socketManager, {
+      //   roomId: "ABC",
+      //   movement: movement
+      // })
        
-      }
-
     }
+
   }
 }
+

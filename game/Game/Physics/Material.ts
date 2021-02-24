@@ -8,11 +8,12 @@ export const defaultSphereContactMaterial = new ContactMaterial(
   defaultMaterial,
   sphereMaterial, 
   {
-    friction: 0.1,
-    restitution: 0.5
+    friction: 0.2,
+    restitution: 0.8
   })
 
 export function setupPhysicsMaterials(game: Game) {
   game.physicsWorld.addContactMaterial(defaultSphereContactMaterial)
   game.physicsWorld.defaultContactMaterial = defaultSphereContactMaterial
 }
+
