@@ -5,7 +5,14 @@ import { ClientSocketData, SocketListenQueueItem } from '../../models/SocketData
 import { gameManager } from '../../game/GameManager';
 import { urlWithPath } from '../Networking';
 import agoraManager from '../AgoraManager';
-import { listenToBureauGameErrors, listenToDidInitializeEvent, listenToParticipantDidJoinEvent, listenToParticipantDidLeaveEvent, listenToParticipantMovementEvent, listenToParticipantStateChangeEvent } from './Listeners';
+import { 
+  listenToBureauGameErrors, 
+  listenToDidInitializeEvent, 
+  listenToParticipantDidJoinEvent, 
+  listenToParticipantDidLeaveEvent,
+  listenToParticipantStateChangeEvent,
+  listenToRenderloop
+} from './Listeners';
 
 const NETWORK_URL = urlWithPath('');
 
@@ -60,8 +67,10 @@ export default class SocketManager {
       listenToParticipantDidJoinEvent(this)
       listenToParticipantDidLeaveEvent(this)
       listenToParticipantStateChangeEvent(this)
-      listenToParticipantMovementEvent(this)
+      // listenToParticipantMovementEvent(this)
       listenToBureauGameErrors(this)
+      listenToRenderloop(this)
+
     });
   }
 
@@ -76,7 +85,9 @@ export default class SocketManager {
       return 
     }
     /// If socket client is currently disconnected, we append this event to queue
-    console.log("Socket client is not connected or not initialized")
+    console.log(
+      "Socket client is not connected or not initialized, appending listen event to queue"
+    )
     this.appendListenEventToQueue({
       event: event,
       onEvent: onEvent

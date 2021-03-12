@@ -1,29 +1,29 @@
 import { Mesh } from 'three'
 import  { Body } from 'cannon-es'
 
-export interface Position {
+export interface BVec3 {
   x: number;
   y: number;
   z: number;
 }
 
-export interface UserState {
-  uid: string;
-  position: Position;
-  // direction: number;
-}
+// export interface UserState {
+//   uid: string;
+//   position: BVec3;
+//   // direction: number;
+// }
 
 export interface UserMovement {
   uid: string;
   movementType: 'WALK' | 'JOINED';
-  changeInPosition?: Position;
+  changeInPosition?: BVec3;
   // changeInDirection?: number;
 }
 
-export interface GameData {
-  userStates: UserState[];
-  userMovements: UserMovement[];
-}
+// export interface GameData {
+//   userStates: UserState[];
+//   userMovements: UserMovement[];
+// }
 
 /*  */
 export interface OutgoingParticipantStateChangeData {

@@ -1,14 +1,16 @@
 import Game from '../Game'
 import { PerspectiveCamera, Camera, Mesh } from 'three';
-import { Position, UserMovement } from '../../models/Game';
+import { BVec3, UserMovement } from '../../models/Game';
 
 export function setupCamera(game: Game, props: { aspect: number }) {
   game.camera = new PerspectiveCamera(90, props.aspect, 0.1, 1000);
   game.camera.position.set(-1, 20, -10);
 }
 
-export function attachCameraToUser(game: Game, props: { uid: string }) {
-  const userMesh: THREE.Mesh | undefined = game.userMeshesTable[props.uid];
+export function   attachCameraToUser(game: Game, props: { uid: string }) {
+  const { uid } = props;
+  console.log(`Attaching camera to user with id ${uid}`)
+  const userMesh: THREE.Mesh | undefined = game.userMeshesTable[uid];
 
   if (userMesh) {
     game.camera.lookAt(userMesh.position);
@@ -58,7 +60,7 @@ export function moveCamera(
 
 export function moveCameraWithMovement(
   camera: Camera,  
-  props:  { movement: Position }) {
+  props:  { movement: BVec3 }) {
 
   const { movement } = props;
   camera.position.x += movement.x;

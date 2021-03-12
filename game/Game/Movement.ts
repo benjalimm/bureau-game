@@ -1,13 +1,13 @@
 import Game from '../Game';
-import { Mesh } from 'three'
-import { GameObjectState, Position, UserMovement } from '../../models/Game';
+import { Mesh, Vector3 } from 'three'
+import { GameObjectState, BVec3, UserMovement } from '../../models/Game';
 import { fixCameraOnMesh, moveCameraWithMovement } from './Camera';
 import { convertPosition } from './Mesh';
 import { Vec3 } from 'cannon-es'
 import { off } from 'process';
 
 export function moveMesh(mesh: Mesh, props: {
-  movement: Position,
+  movement: BVec3,
 }) {
   const { movement } = props
   mesh.position.x += movement.x;
@@ -48,7 +48,7 @@ export function moveUser(game: Game, props: {
 
 export function moveLocalUser(game: Game, props: {
   uid: string,
-  movement: Position
+  movement: BVec3
 }) {
   const { uid, movement } = props;
   const mesh: Mesh | undefined = game.userMeshesTable[uid];
@@ -62,17 +62,17 @@ export function moveLocalUser(game: Game, props: {
 }
 
 export function setMeshAtPosition(mesh: Mesh, props: {
-  position: Position
+  position: BVec3
 }) {
   const { position } = props
-  mesh.position.x = position.x 
-  mesh.position.y = position.y 
-  mesh.position.z = position.z
+  console.log(`Position: ${JSON.stringify(position)}`)
+  const { x, y, z } = position
+  mesh.position.copy(new Vector3(x, y, z))
 }
 
 export async function setUserAtPosition(game: Game, props: {
   uid: string,
-  position: Position 
+  position: BVec3 
 }) {
   const { uid, position } = props;
   const userMesh = game.userMeshesTable[uid]
@@ -84,7 +84,7 @@ export async function setUserAtPosition(game: Game, props: {
 
 export async function moveGameObject(game: Game, props: {
   uid: string
-  movement: Position
+  movement: BVec3
 }) {
   console.log("Moving gaming object")
   const { movement, uid } = props
@@ -97,7 +97,7 @@ export async function moveGameObject(game: Game, props: {
     const meshPosition = gameObj.body.position
 
     // 2. Update position with movement 
-    const currentPosition: Position = {
+    const currentPosition: BVec3 = {
       x: meshPosition.x += movement.x,
       y: meshPosition.y += movement.y,
       z: meshPosition.z += movement.z

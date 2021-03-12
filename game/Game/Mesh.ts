@@ -1,5 +1,5 @@
 import Game from '../Game'
-import { Position } from '../../models/Game'
+import { BVec3 } from '../../models/Game'
 import { SphereGeometry, MeshPhongMaterial, Mesh, Vector3 } from 'three';
 import { Body, Sphere, Vec3 } from 'cannon-es'
 import { defaultMaterial } from './Physics/Material';
@@ -14,7 +14,7 @@ export function removeUserMesh(game: Game, props: { uid: string } ) {
 
 export function addUserMesh(game: Game, props: { 
   uid: string, 
-  position: Position
+  position: BVec3
 }): Mesh {
   const { uid, position } = props;
   /// Remove existing user mesh if it exists
@@ -38,6 +38,7 @@ export function addUserMesh(game: Game, props: {
     shape: sphereShape,
     material: defaultMaterial
   })
+
   sphereBody.position.copy(cannonVec)
   game.physicsWorld.addBody(sphereBody)
 
@@ -63,7 +64,7 @@ export function createNewSphereMesh(game: Game,
   return mesh;
 }
 
-export function convertPosition(position: Position): {
+export function convertPosition(position: BVec3): {
   threeVec: Vector3,
   cannonVec: Vec3
 } {

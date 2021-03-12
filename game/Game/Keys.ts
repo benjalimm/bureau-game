@@ -1,5 +1,5 @@
 import { HashTable } from '../../models/Common';
-import { UserMovement, Position } from '../../models/Game';
+import { UserMovement, BVec3 } from '../../models/Game';
 import { getCurrentUserId } from '../../services/Authentication';
 import { keyboardManager } from '../../services/KeyboardManager';
 import { socketManager } from '../../services/SocketManager';
@@ -22,20 +22,20 @@ export function handlePressedKeys(game: Game,
 
     if (uid) {
 
-      const movement: Position = {
+      const movement: BVec3 = {
         x: speed,
         y: 0,
         z: 0
       }
-      moveLocalUser(game, {
-        uid: uid,
-        movement: movement
-      })
-
-      // emitMovement(socketManager, {
-      //   roomId: "ABC",
+      // moveLocalUser(game, {
+      //   uid: uid,
       //   movement: movement
       // })
+
+      emitMovement(socketManager, {
+        roomId: "ABC",
+        movement: movement
+      })
     }
 
   }
@@ -44,21 +44,21 @@ export function handlePressedKeys(game: Game,
 
     if (uid) {
 
-      const movement: Position = {
+      const movement: BVec3 = {
         x: 0,
         y: 0,
         z: speed
       }
 
-      moveLocalUser(game, {
-        uid: uid,
-        movement: movement
-      })
-
-      // emitMovement(socketManager, {
-      //   roomId: "ABC",
+      // moveLocalUser(game, {
+      //   uid: uid,
       //   movement: movement
       // })
+
+      emitMovement(socketManager, {
+        roomId: "ABC",
+        movement: movement
+      })
     }
       
   }
@@ -66,20 +66,20 @@ export function handlePressedKeys(game: Game,
 
     if (uid) {      
 
-      const movement: Position = {
+      const movement: BVec3 = {
         x: -speed,
         y: 0,
         z: 0
       }
-      moveLocalUser(game, {
-        uid: uid,
-        movement: movement
-      })
-
-      // emitMovement(socketManager, {
-      //   roomId: "ABC",
+      // moveLocalUser(game, {
+      //   uid: uid,
       //   movement: movement
       // })
+
+      emitMovement(socketManager, {
+        roomId: "ABC",
+        movement: movement
+      })
     }
       
   }
@@ -88,20 +88,20 @@ export function handlePressedKeys(game: Game,
 
     if (uid) {
 
-      const movement: Position = {
+      const movement: BVec3 = {
         x: 0,
         y: 0,
         z: -speed
       }
-      moveLocalUser(game, {
-        uid: uid,
-        movement: movement
-      })
-
-      // emitMovement(socketManager, {
-      //   roomId: "ABC",
+      // moveLocalUser(game, {
+      //   uid: uid,
       //   movement: movement
       // })
+
+      emitMovement(socketManager, {
+        roomId: "ABC",
+        movement: movement
+      })
        
     }
       

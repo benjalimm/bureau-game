@@ -1,9 +1,10 @@
 import SocketManager from '.'
 import { RoomParticipant } from '../../models/User'
-import  { IncomingParticipantStateChangeData, GameData, UserState } from '../../models/Game'
+import  { IncomingParticipantStateChangeData } from '../../models/Game'
 import { gameManager } from '../../game/GameManager';
 import { participantDidJoinRoom, participantDidLeaveRoom, participantMuteStateDidChange } from '../../game/Game/Participants';
 import { getCurrentUserId } from '../Authentication';
+import { LoopData, ObjectState } from '../../models/RenderLoop';
 
 export function listenToParticipantDidJoinEvent(manager: SocketManager) {
   manager.listen('didJoin', (data) => {
@@ -44,20 +45,20 @@ export function listenToParticipantStateChangeEvent(manager: SocketManager) {
   });
 }
 
-export function listenToParticipantMovementEvent(manager: SocketManager) {
-  manager.listen('movement', (data) => {
+// export function listenToParticipantMovementEvent(manager: SocketManager) {
+//   manager.listen('movement', (data) => {
     
-    const gameData = data as GameData;
-    const uid = getCurrentUserId()
+//     const gameData = data as GameData;
+//     const uid = getCurrentUserId()
 
-    if (uid) {
-      gameManager.currentGame?.didReceiveGameData(
-        gameData,
-        uid
-      );
-    }
-  });
-}
+//     if (uid) {
+//       gameManager.currentGame?.didReceiveGameData(
+//         gameData,
+//         uid
+//       );
+//     }
+//   });
+// }
 
 export function listenToBureauGameErrors(manager: SocketManager) {
   manager.listen('bureauGameError', (data) => {
@@ -71,7 +72,7 @@ export function listenToDidInitializeEvent(manager: SocketManager) {
     console.log('didInitialize');
     console.log(data);
 
-    const userStates = data.userStates as UserState[];
+    const objectStates = data.objectStates as ObjectState[]
     const participants = data.participants as RoomParticipant[];
     const roomId = data.roomId as string;
 
@@ -79,13 +80,40 @@ export function listenToDidInitializeEvent(manager: SocketManager) {
     /// Initialize initial user states
 
     if (uid) {
-      gameManager.currentGame?.initializeInitialUserStates(
-        userStates,
+      gameManager.currentGame?.initializeInitialObjectStates(
+        objectStates,
         uid
       );
       /// Initialize initial room participants
       gameManager.currentGame?.initializeRoom(roomId, participants);
     }
-    
   });
+}
+
+export function onDidInitializeEvent(manager: SocketManager, props: {
+  roomId: string,
+  participants: RoomParticipant[],
+  objectStates: ObjectState[]
+}) {
+  const { roomId, participants, objectStates } = props;
+
+  const uid = getCurrentUserId()
+  /// Initialize initial user states
+
+  if (uid) {
+    gameManager.currentGame?.initializeInitialObjectStates(
+      objectStates,
+      uid
+    );
+    /// Initialize initial room participants
+    gameManager.currentGame?.initializeRoom(roomId, participants);
+  }
+}
+
+export function listenToRenderloop(manager: SocketManager) {
+  manager.listen('loop', (data) => {
+    console.log("did receive render loop data")
+    const loopData = data.loopData as LoopData
+    gameManager.currentGame?.didReceiveRenderLoopData(loopData)
+  })
 }

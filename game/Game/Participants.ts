@@ -1,7 +1,7 @@
 import { RoomParticipant } from '../../models/User';
 import { socketManager } from '../../services/SocketManager';
 import Game, { ParticipantChangeFunction } from '.'
-import { OutgoingParticipantStateChangeData, Position } from '../../models/Game';
+import { OutgoingParticipantStateChangeData, BVec3 } from '../../models/Game';
 import { addUserMesh, removeUserMesh } from './Mesh';
 
 export type ParticipantChangeEvent = 'Join' | 'Leave' | 'Initialized' | 'StateChange';
@@ -21,7 +21,7 @@ export function participantDidJoinRoom(game: Game, props: {
   participant: RoomParticipant
 }) {
   const { participant } = props;
-  const initialPosition: Position = {
+  const initialPosition: BVec3 = {
     x: 1,
     y: 1,
     z: 1

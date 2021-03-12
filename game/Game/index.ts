@@ -1,8 +1,6 @@
 import * as THREE from 'three';
 import {
-  UserState,
-  GameData,
-  GameObjectState
+  GameObjectState, UserMovement
 } from '../../models/Game';
 import { HashTable } from '../../models/Common';
 import { RoomParticipant } from '../../models/User';
@@ -13,12 +11,13 @@ import { setupCamera, attachCameraToUser, fixCameraOnMesh } from './Camera'
 import { setupGround } from './Ground'
 import { handlePressedKeys } from './Keys'
 import { keyboardManager } from '../../services/KeyboardManager';
-import { moveUser, setMeshAtPosition } from './Movement';
+import { moveMesh, moveUser, setMeshAtPosition } from './Movement';
 import { addUserMesh } from './Mesh';
-import { World, GridBroadphase, SAPBroadphase } from 'cannon-es'
+import { World, SAPBroadphase } from 'cannon-es'
 import { Vector3 } from 'three';
 import { setupPhysicsMaterials } from './Physics/Material';
 import { getCurrentUserId } from '../../services/Authentication';
+import { LoopData, ObjectState } from "../../models/RenderLoop"
 
 export type ParticipantChangeFunction = (
   participant: RoomParticipant | null,
@@ -34,11 +33,11 @@ export default class Game {
 
   /* Room or participant states  */
   currentRoom?: Room;
-  userStates: UserState[];
   userMeshesTable: HashTable<THREE.Mesh> = {};
   participantChangesListenerHashTable: HashTable<ParticipantChangeFunction> = {}
   gameObjectsHashTable: HashTable<GameObjectState> = {}
   groundObjectState?: GameObjectState
+  currentLoopData?: LoopData
 
   /* Physics state */
   physicsWorld: World;
@@ -115,35 +114,45 @@ export default class Game {
     });
   }
 
-  didReceiveGameData(gameData: GameData, uid: string) {
-    console.log('didReceiveGameData');
-
-    // gameData.userMovements.forEach((movement) => {
-    //   moveUser(this, {
-    //     userMovement: movement,
-    //     uid: uid
-    //   })
-    // });
-
-    gameData.userStates.forEach((userState) => {
-      const mesh: THREE.Mesh | undefined = this.userMeshesTable[userState.uid];
+  didReceiveRenderLoopData(data: LoopData) {
+    
+    const uid = getCurrentUserId()
+    console.log(`Object states ${JSON.stringify(data.state.objectStates)}`);
+    data.state.objectStates.forEach(objState => {
+      
+      const mesh: THREE.Mesh | undefined = this.userMeshesTable[objState.id];
 
       if (mesh) {
+        console.log("Mesh exist, setting position")
         setMeshAtPosition(mesh, {
-          position: userState.position
+          position: objState.position
+        })
+        
+      }
+    })
+
+    data.actions.forEach(action => {
+      const movement = action.data.movement as UserMovement
+
+      if (movement.uid === uid) {
+        moveUser(this, {
+          uid: uid,
+          userMovement: movement
         })
       }
-    });
+      
+    })
   }
 
-  initializeInitialUserStates(userStates: UserState[], userId: string) {
-    this.userStates = userStates;
+  initializeInitialObjectStates(objectStates: ObjectState[], userId: string) {
+    console.log("Initializing initial object states")
+    // this.userStates = userStates;
 
-    userStates.forEach((userState) => {
+    objectStates.forEach((state) => {
       
       addUserMesh(this, { 
-        uid: userState.uid,
-        position: userState.position
+        uid: state.id,
+        position: state.position
       })
     });
 
