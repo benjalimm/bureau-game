@@ -17,6 +17,7 @@ export function emitMovement(manager: SocketManager, props: {
   movement: BVec3
 }) {
   const { roomId, movement } = props;
+  console.log(`Emitting movement: ${JSON.stringify(movement)}`)
   manager.emit('movement' , {
     roomId: roomId,
     data: { movement: movement }

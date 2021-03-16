@@ -18,6 +18,7 @@ import { Vector3 } from 'three';
 import { setupPhysicsMaterials } from './Physics/Material';
 import { getCurrentUserId } from '../../services/Authentication';
 import { LoopData, ObjectState } from "../../models/RenderLoop"
+import PhysicsManager from './Physics';
 
 export type ParticipantChangeFunction = (
   participant: RoomParticipant | null,
@@ -40,19 +41,12 @@ export default class Game {
   currentLoopData?: LoopData
 
   /* Physics state */
-  physicsWorld: World;
-  clock: THREE.Clock = new THREE.Clock()
-  oldElapsedTime = 0
+  // physicsWorld: World;
+  // clock: THREE.Clock = new THREE.Clock()
+  // oldElapsedTime = 0
+  physicsManager = new PhysicsManager()
 
   player = { height: 1.8, speed: 0.2, turnSpeed: Math.PI * 0.02 };
-
-  constructor() {
-    console.log("Setup physics")
-    this.physicsWorld = new World()
-    this.physicsWorld.gravity.set(0, -9.83, 0)
-    this.physicsWorld.broadphase = new SAPBroadphase(this.physicsWorld!)
-    // this.physicsWorld.allowSleep = true
-  }
   
   initialize(height: number, width: number) {
 
@@ -84,10 +78,7 @@ export default class Game {
   }
 
   tick() {
-    const elapsedTime = this.clock.getElapsedTime()
-    const deltaTime = elapsedTime - this.oldElapsedTime
-    this.oldElapsedTime = elapsedTime 
-    this.physicsWorld.step(1 / 60, deltaTime, 3)
+    this.physicsManager.step()
     //Update physics
     for (const key of Object.keys(this.gameObjectsHashTable)) {
       const gameObject = this.gameObjectsHashTable[key]

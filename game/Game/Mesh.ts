@@ -40,7 +40,7 @@ export function addUserMesh(game: Game, props: {
   })
 
   sphereBody.position.copy(cannonVec)
-  game.physicsWorld.addBody(sphereBody)
+  game.physicsManager.physicsWorld.addBody(sphereBody)
 
   game.gameObjectsHashTable[uid] = {
     mesh: userMesh,

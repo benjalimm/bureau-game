@@ -1,7 +1,6 @@
 import Game from '../Game';
 import { PlaneGeometry, MeshPhongMaterial, Mesh } from 'three';
-import { Plane, Body, World, Vec3 } from 'cannon-es'
-import { ADDRGETNETWORKPARAMS } from 'dns';
+import { Plane, Body, Vec3 } from 'cannon-es'
 
 export function setupGround(game: Game) {
 
@@ -25,7 +24,7 @@ export function setupGround(game: Game) {
     new Vec3(-1, 0 , 0),
     Math.PI * 0.5
   )
-  game.physicsWorld.addBody(floorBody)
+  game.physicsManager.physicsWorld.addBody(floorBody)
 
   game.groundObjectState = {
     mesh: plane,
