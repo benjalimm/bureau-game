@@ -1,6 +1,6 @@
 import Game from '../Game';
 import { Mesh, Vector3 } from 'three'
-import { GameObjectState, BVec3, UserMovement } from '../../models/Game';
+import { GameObjectState, BVec3, UserMovement } from '../../models/GameData';
 import { fixCameraOnMesh, moveCameraWithMovement } from './Camera';
 import { convertPosition } from './Mesh';
 import { Vec3 } from 'cannon-es'

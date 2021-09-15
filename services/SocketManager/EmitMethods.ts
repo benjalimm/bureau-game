@@ -1,4 +1,4 @@
-import { BVec3 } from '../../models/Game'
+import { BVec3 } from '../../models/GameData'
 import SocketManager from '../SocketManager'
 
 export function joinRoom(manager: SocketManager, props: { 

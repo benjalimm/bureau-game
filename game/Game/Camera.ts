@@ -1,6 +1,6 @@
 import Game from '../Game'
 import { PerspectiveCamera, Camera, Mesh } from 'three';
-import { BVec3, UserMovement } from '../../models/Game';
+import { BVec3, UserMovement } from '../../models/GameData';
 
 export function setupCamera(game: Game, props: { aspect: number }) {
   game.camera = new PerspectiveCamera(90, props.aspect, 0.1, 1000);

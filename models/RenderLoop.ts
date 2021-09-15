@@ -1,5 +1,5 @@
 
-import { BVec3 } from './Game'
+import { BVec3 } from './GameData'
 
 export interface LoopData {
   events: GameEvent[],

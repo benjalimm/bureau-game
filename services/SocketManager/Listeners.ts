@@ -1,6 +1,6 @@
 import SocketManager from '.'
 import { RoomParticipant } from '../../models/User'
-import  { IncomingParticipantStateChangeData } from '../../models/Game'
+import  { IncomingParticipantStateChangeData } from '../../models/GameData'
 import { gameManager } from '../../game/GameManager';
 import { participantDidJoinRoom, participantDidLeaveRoom, participantMuteStateDidChange } from '../../game/Game/Participants';
 import { getCurrentUserId } from '../Authentication';

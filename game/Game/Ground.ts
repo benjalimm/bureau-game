@@ -10,6 +10,8 @@ export function setupGround(game: Game) {
     color: 0x58d10d,
     wireframe: false
   });
+
+  //Add 3D object
   const plane = new Mesh(geo, mat);
   plane.rotation.x -= Math.PI / 2;
   plane.receiveShadow = true;

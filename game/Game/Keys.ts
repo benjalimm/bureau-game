@@ -1,5 +1,5 @@
 import { HashTable } from '../../models/Common';
-import { UserMovement, BVec3 } from '../../models/Game';
+import { UserMovement, BVec3 } from '../../models/GameData';
 import { getCurrentUserId } from '../../services/Authentication';
 import { keyboardManager } from '../../services/KeyboardManager';
 import { socketManager } from '../../services/SocketManager';

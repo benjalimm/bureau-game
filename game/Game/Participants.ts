@@ -1,7 +1,7 @@
 import { RoomParticipant } from '../../models/User';
 import { socketManager } from '../../services/SocketManager';
 import Game, { ParticipantChangeFunction } from '.'
-import { OutgoingParticipantStateChangeData, BVec3 } from '../../models/Game';
+import { OutgoingParticipantStateChangeData, BVec3 } from '../../models/GameData';
 import { addUserMesh, removeUserMesh } from './Mesh';
 
 export type ParticipantChangeEvent = 'Join' | 'Leave' | 'Initialized' | 'StateChange';

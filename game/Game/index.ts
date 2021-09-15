@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import {
   GameObjectState, UserMovement
-} from '../../models/Game';
+} from '../../models/GameData';
 import { HashTable } from '../../models/Common';
 import { RoomParticipant } from '../../models/User';
 import { Room } from '../Room';
@@ -109,8 +109,9 @@ export default class Game {
     
     const uid = getCurrentUserId()
     console.log(`Object states ${JSON.stringify(data.state.objectStates)}`);
+    
+    //Set user to global state - not working I think
     data.state.objectStates.forEach(objState => {
-      
       const mesh: THREE.Mesh | undefined = this.userMeshesTable[objState.id];
 
       if (mesh) {
@@ -122,6 +123,7 @@ export default class Game {
       }
     })
 
+    //Move user based on change in state
     data.actions.forEach(action => {
       const movement = action.data.movement as UserMovement
 

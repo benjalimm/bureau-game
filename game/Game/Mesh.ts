@@ -1,22 +1,20 @@
 import Game from '../Game'
-import { BVec3 } from '../../models/Game'
+import { BVec3 } from '../../models/GameData'
 import { SphereGeometry, MeshPhongMaterial, Mesh, Vector3 } from 'three';
 import { Body, Sphere, Vec3 } from 'cannon-es'
 import { defaultMaterial } from './Physics/Material';
 
-export function removeUserMesh(game: Game, props: { uid: string } ) {
-  const { uid } = props
+export function removeUserMesh(game: Game, { uid }: { uid: string } ) {
   const existingMesh = game.userMeshesTable[uid];
   if (existingMesh) {
     game.scene.remove(existingMesh);
   }
 }
 
-export function addUserMesh(game: Game, props: { 
+export function addUserMesh(game: Game, { uid, position }: { 
   uid: string, 
   position: BVec3
 }): Mesh {
-  const { uid, position } = props;
   /// Remove existing user mesh if it exists
   removeUserMesh(game, { uid: uid });
 
@@ -51,8 +49,7 @@ export function addUserMesh(game: Game, props: {
 }
 
 export function createNewSphereMesh(game: Game, 
-  props: { radius: number }): Mesh {
-  const { radius } = props;
+  { radius }: { radius: number }): Mesh {
   const geometry = new SphereGeometry(radius, 20);
   const material = new MeshPhongMaterial({
     color:     0xff00ff,
