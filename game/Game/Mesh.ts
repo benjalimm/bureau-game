@@ -1,6 +1,11 @@
 import Game from '../Game'
 import { Position } from '../../models/Game'
 import { SphereGeometry, MeshPhongMaterial, Mesh } from 'three';
+// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+
+const GLTFLoader = import('three/examples/jsm/loaders/GLTFLoader').then((mod) => {
+  return mod.GLTFLoader
+});
 
 export function removeUserMesh(game: Game, props: { uid: string } ) {
   const { uid } = props
@@ -40,5 +45,19 @@ export function createNewSphereMesh(game: Game): THREE.Mesh {
   mesh.receiveShadow = true;
   mesh.castShadow = true;
   return mesh;
+}
+
+export async function loadGLTFModel(game: Game, { filePath }: { filePath: string})  {
+  console.log("Loading GLTF model")
+  const gltfLoader = await GLTFLoader
+  const loader = new gltfLoader()
+  loader.load(filePath, (gltf) => {
+    console.log("Loaded model:")
+    console.log(gltf.scene)
+
+    game.scene.add(gltf.scene)
+    gltf.scene.rotateY(90)
+    gltf.scene.receiveShadow = true 
+  })
 }
 

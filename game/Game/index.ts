@@ -13,7 +13,7 @@ import { setupGround } from './Ground'
 import { handlePressedKeys } from './Keys'
 import { keyboardManager } from '../../services/KeyboardManager';
 import { moveUser, setMeshAtPosition } from './Movement';
-import { addUserMesh } from './Mesh';
+import { addUserMesh, loadGLTFModel } from './Mesh';
 
 export type ParticipantChangeFunction = (
   participant: RoomParticipant | null,
@@ -48,6 +48,8 @@ export default class Game {
     })
     setupShadows(this);
     setupLights(this);
+
+    loadGLTFModel(this, { filePath: "./3dassets/arcadeMachine.glb"})
   }
 
   renderScene() {
